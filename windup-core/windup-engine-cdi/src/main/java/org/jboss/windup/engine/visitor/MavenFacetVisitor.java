@@ -1,7 +1,5 @@
 package org.jboss.windup.engine.visitor;
 
-import static org.joox.JOOX.$;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,8 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import com.thinkaurelius.titan.core.TitanGraphQuery;
 
 /**
  * Adds the MavenFacet to the XML.

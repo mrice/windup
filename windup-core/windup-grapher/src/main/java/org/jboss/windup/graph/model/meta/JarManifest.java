@@ -3,6 +3,7 @@ package org.jboss.windup.graph.model.meta;
 import java.util.Set;
 
 import org.jboss.windup.graph.model.resource.JarArchive;
+import org.jboss.windup.graph.model.resource.Resource;
 
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Vertex;
@@ -12,7 +13,13 @@ import com.tinkerpop.frames.modules.javahandler.JavaHandlerContext;
 import com.tinkerpop.frames.modules.typedgraph.TypeValue;
 
 @TypeValue("JarManifestMeta")
-public interface JarManifest extends Meta {
+public interface JarManifest extends Resource {
+	
+	@Adjacency(label="manifestFacet", direction=Direction.IN)
+	public Resource getResource();
+
+	@Adjacency(label="manifestFacet", direction=Direction.IN)
+	public void setResource(Resource resource);
 	
 	@Adjacency(label="meta", direction=Direction.IN)
 	public void setJarArchive(final JarArchive archive);
@@ -47,7 +54,13 @@ public interface JarManifest extends Meta {
 		public Set<String> keySet() {
 			return this.it().getPropertyKeys();
 		}
-		
+
+		@Override
+		public String toString() {
+			return "Impl [keySet()=" + keySet() + ", getClass()=" + getClass()
+					+ ", hashCode()=" + hashCode() + ", toString()="
+					+ super.toString() + "]";
+		}
 	}
 	 
 }

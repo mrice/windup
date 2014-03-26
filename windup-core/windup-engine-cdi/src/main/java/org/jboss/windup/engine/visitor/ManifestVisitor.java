@@ -68,6 +68,7 @@ public class ManifestVisitor extends EmptyGraphVisitor {
 			
 			JarManifest manifest = manifestDao.create();
 			manifest.setJarArchive(entry);
+			//TODO: reference back to the JAR entry... manifest.
 			
 			for(Object key : fileManifest.getMainAttributes().keySet()) {
 				String property = StringUtils.trim(key.toString());

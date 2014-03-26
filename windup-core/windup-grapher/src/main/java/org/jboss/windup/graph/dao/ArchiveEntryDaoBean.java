@@ -32,6 +32,7 @@ public class ArchiveEntryDaoBean extends BaseDaoBean<ArchiveEntryResource> {
 		return pipe.start(findArchiveEntryWithExtension(values)).count();
 	}
 	
+	//builds a regular expression query in lucene to search for archives matching extensions.
 	public Iterable<ArchiveEntryResource> findArchiveEntryWithExtension(String ... values) {
 		//build regex
 		if(values.length == 0) {

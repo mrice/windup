@@ -36,9 +36,17 @@ import org.jboss.windup.engine.visitor.reporter.HibernateEntityReporter;
 import org.jboss.windup.engine.visitor.reporter.JarManifestReporter;
 import org.jboss.windup.engine.visitor.reporter.MavenPomReporter;
 import org.jboss.windup.engine.visitor.reporter.NamespacesFoundReporter;
+import org.jboss.windup.engine.visitor.reporter.WriteGraphToDotReporter;
 import org.jboss.windup.engine.visitor.reporter.WriteGraphToGraphMLReporter;
+import org.jboss.windup.engine.visitor.reporter.html.model.ServerResourceReport;
+import org.jboss.windup.engine.visitor.reporter.html.renderer.ApplicationReportRenderer;
+import org.jboss.windup.engine.visitor.reporter.html.renderer.EJBReportRenderer;
+import org.jboss.windup.engine.visitor.reporter.html.renderer.HibernateReportRenderer;
+import org.jboss.windup.engine.visitor.reporter.html.renderer.OverviewReportRenderer;
+import org.jboss.windup.engine.visitor.reporter.html.renderer.CssJsResourceRenderer;
+import org.jboss.windup.engine.visitor.reporter.html.renderer.ServerResourceReportRenderer;
+import org.jboss.windup.engine.visitor.reporter.html.renderer.SpringReportRenderer;
 import org.jboss.windup.graph.model.meta.EnvironmentReference;
-import org.jboss.windup.graph.model.meta.xml.NamespaceMeta;
 
 public class ListenerChainProvider {
 
@@ -107,6 +115,10 @@ public class ListenerChainProvider {
 	private WriteGraphToGraphMLReporter exportToMLreporter;
 	
 	@Inject
+	private WriteGraphToDotReporter exportToDotReporter;
+	
+	
+	@Inject
 	private MavenPomReporter mavenPomReporter;
 	
 	@Inject
@@ -127,6 +139,32 @@ public class ListenerChainProvider {
 	@Inject
 	private ArchiveTransitiveDependsOnReporter archiveTransitiveReporter;
 	
+	//
+	// Report Renderers
+	//
+	@Inject
+	private CssJsResourceRenderer resourceRenderer;
+	
+	@Inject
+	private OverviewReportRenderer overviewRenderer;
+	
+	@Inject
+	private ApplicationReportRenderer appReportRenderer;
+	
+	@Inject
+	private EJBReportRenderer ejbRenderer;
+	
+	@Inject
+	private HibernateReportRenderer hibernateRenderer;
+	
+	@Inject
+	private SpringReportRenderer springRenderer;
+	
+	@Inject
+	private ServerResourceReportRenderer serverResourceRenderer;
+	
+	
+	
 	@ListenerChainQualifier
 	@Produces
 	public List<GraphVisitor> produceListenerChain() {
@@ -143,7 +181,7 @@ public class ListenerChainProvider {
 		
 		listenerChain.add(webConfigurationVisitor);
 		//listenerChain.add(archiveTransitiveReporter);
-		//listenerChain.add(ejbConfigurationVisitor);
+		listenerChain.add(ejbConfigurationVisitor);
 		//listenerChain.add(ejbConfigurationReporter);
 		
 		//listenerChain.add(hibernateConfigurationVisitor); //loads hibernate configurations and processes
@@ -171,15 +209,22 @@ public class ListenerChainProvider {
 		//listenerChain.add(exportToMLreporter);
 		//listenerChain.add(mavenPomReporter);
 		//listenerChain.add(duplicateClassReporter); //reports all classes found multiple times on the classpath.
-		/*
 		listenerChain.add(classNotFoundReporter); //reports all classes not found on the classpath.
 		
 		
 		
-		//listenerChain.add(graphRenderReporter);
+		listenerChain.add(graphRenderReporter);
+		listenerChain.add(namespacesFoundReporter);
+		listenerChain.add(exportToDotReporter);
 		
-		*/
-		//listenerChain.add(namespacesFoundReporter);
+		listenerChain.add(resourceRenderer);
+		listenerChain.add(overviewRenderer);
+		listenerChain.add(appReportRenderer);
+		listenerChain.add(ejbRenderer);
+		listenerChain.add(hibernateRenderer);
+		listenerChain.add(springRenderer);
+		listenerChain.add(serverResourceRenderer);
+
 		return listenerChain;
 	}
 }

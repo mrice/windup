@@ -94,6 +94,7 @@ public class XmlResourceVisitor extends EmptyGraphVisitor {
 				else {
 					LOG.debug("Adding doctype: "+docType);
 					DoctypeMeta meta = doctypeDao.create(null);
+					meta.addXmlResource(resource);
 					meta.setBaseURI(docType.getBaseURI());
 					meta.setName(docType.getName());
 					meta.setPublicId(docType.getPublicId());

@@ -32,7 +32,7 @@ public class XmlUtil {
 		
 		String schemaLocation;
 		try {
-			schemaLocation = XmlUtil.xpathExtract(doc, "//@xsi:schemaLocation", objs);
+			schemaLocation = XmlUtil.xpathExtract(doc, "/@xsi:schemaLocation", objs);
 		} catch (MarshallingException e) {
 			throw new RuntimeException("Exception extracting xpath.", e);
 		}

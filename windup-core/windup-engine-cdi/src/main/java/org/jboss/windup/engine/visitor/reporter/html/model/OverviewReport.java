@@ -1,0 +1,33 @@
+package org.jboss.windup.engine.visitor.reporter.html.model;
+
+import java.util.LinkedList;
+import java.util.List;
+
+public class OverviewReport {
+
+	private Link applicationLink;
+	
+	private final List<Tag> technologyTags = new LinkedList<>();
+	private Effort effort = Effort.LOW;
+	private final List<Tag> issueTags = new LinkedList<>();
+	
+	public Link getApplicationLink() {
+		return applicationLink;
+	}
+	public void setApplicationLink(Link applicationLink) {
+		this.applicationLink = applicationLink;
+	}
+	public List<Tag> getTechnologyTags() {
+		return technologyTags;
+	}
+	public Effort getEffort() {
+		return effort;
+	}
+	public void setEffort(Effort effort) {
+		this.effort = effort;
+	}
+	public List<Tag> getIssueTags() {
+		return issueTags;
+	}
+	
+}

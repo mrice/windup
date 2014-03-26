@@ -14,10 +14,10 @@ public class BasicVisitor extends EmptyGraphVisitor {
 	
 	@Override
 	public void run() {
-		File r1 = new File("/Users/bradsdavis/JBoss/jboss-eap-6.1/standalone/deployments/custom-application-remote.war");
+		File r1 = new File("/Users/bradsdavis/Windup/Presentation/jee-example-app-1.0.0.ear");
 		org.jboss.windup.graph.model.resource.FileResource r1g = fileDao.getByFilePath(r1.getAbsolutePath());
 		
-		File r2 = new File("/Users/bradsdavis/Projects/migrations/inputs/WindupConfigurations.jar");
-		org.jboss.windup.graph.model.resource.FileResource r2g = fileDao.getByFilePath(r2.getAbsolutePath());
+		//File r2 = new File("/Users/bradsdavis/Projects/migrations/inputs/WindupConfigurations.jar");
+		//org.jboss.windup.graph.model.resource.FileResource r2g = fileDao.getByFilePath(r2.getAbsolutePath());
 	}
 }

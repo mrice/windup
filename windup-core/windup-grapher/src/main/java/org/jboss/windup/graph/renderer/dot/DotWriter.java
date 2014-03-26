@@ -60,6 +60,13 @@ public class DotWriter implements GraphWriter {
 	private void writeGraphEdges(OutputStream os) throws IOException {
 		for(Edge edge : graph.getEdges()) {
 			String label = edgeLabel;
+			
+			if(StringUtils.isBlank(label)) {
+				for(String key : edge.getPropertyKeys()) {
+					label += key +" -> " + edge.getProperty(key)+"; \n";
+				}
+				label = StringUtils.trim(label);
+			}
 			String source = ""+edge.getVertex(Direction.OUT).getId().toString();
 			String target = ""+edge.getVertex(Direction.IN).getId().toString();
 			writeGraphEdge(label, source, target, os);
@@ -93,7 +100,12 @@ public class DotWriter implements GraphWriter {
 			String label = vertex.getProperty(vertexLabelProperty);
 			
 			if(StringUtils.isBlank(label)) {
-				label = vertex.toString();
+				label = "";
+				for(String key : vertex.getPropertyKeys()) {
+					label += key +" -> "+vertex.getProperty(key)+"; \n";
+				}
+				label = StringUtils.trim(label);
+				
 			}
 			writeGraphNode(id, label, os);
 		}
