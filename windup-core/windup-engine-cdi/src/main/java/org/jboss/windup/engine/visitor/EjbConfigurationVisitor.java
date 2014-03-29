@@ -68,7 +68,7 @@ public class EjbConfigurationVisitor extends EmptyGraphVisitor {
 	@Override
 	public void run() {
 		for(XmlResource xml : xmlDao.findByRootTag("ejb-jar")) {
-			Document doc = xmlDao.asDocument(xml);
+			Document doc = xml.asDocument();
 			
 			//otherwise, it is a EJB-JAR XML.
 			if(xml.getDoctype() != null) {

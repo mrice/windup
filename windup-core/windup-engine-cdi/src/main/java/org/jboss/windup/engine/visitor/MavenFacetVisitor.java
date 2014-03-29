@@ -58,7 +58,7 @@ public class MavenFacetVisitor extends EmptyGraphVisitor {
 	@Override
 	public void visitXmlResource(XmlResource entry) {
 		try {
-			Document document = xmlResourceDao.asDocument(entry);
+			Document document = entry.asDocument();
 			/*String modelVersion = $(document).namespace("pom", "http://maven.apache.org/POM/4.0.0")
 										.xpath("/pom:project/pom:modelVersion").text();
 			*/

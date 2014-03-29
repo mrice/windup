@@ -53,7 +53,7 @@ public class SpringConfigurationVisitor extends EmptyGraphVisitor {
 	@Override
 	public void visitXmlResource(XmlResource entry) {
 		try {
-			Document doc = xmlResourceDao.asDocument(entry);
+			Document doc = entry.asDocument();
 			org.w3c.dom.Element element = $(doc).namespace("s", "http://www.springframework.org/schema/beans").xpath("/s:beans").get().get(0);
 
 			if(element != null) {

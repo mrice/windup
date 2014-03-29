@@ -90,7 +90,7 @@ public class HibernateMappingVisitor extends EmptyGraphVisitor {
 			hibernateMapping.setXmlFacet(xml);
 			
 			
-			Document doc = xmlResourceDao.asDocument(xml);
+			Document doc = xml.asDocument();
 			
 			if(!XmlUtil.xpathExists(doc, "/hibernate-mapping", null)) {
 				LOG.warn("Docment does not contain Hibernate Mapping.");
