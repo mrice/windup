@@ -1,6 +1,7 @@
 package org.jboss.windup.configuration;
 
 import java.io.File;
+import java.util.Date;
 
 import org.jboss.windup.config.GraphRewrite;
 import org.jboss.windup.graph.GraphContext;
@@ -26,8 +27,16 @@ public class ReadXMLConfigurationTest
       DefaultParameterValueStore values = new DefaultParameterValueStore();
       evaluationContext.put(ParameterValueStore.class, values);
 
-      Subset.evaluate(configuration).perform(new GraphRewrite(), evaluationContext);
-
       System.out.println(configuration);
+      
+      Date t1 = new Date();
+      
+      Subset.evaluate(configuration).perform(new GraphRewrite(), evaluationContext);
+      
+      Date t2 = new Date();
+      
+      System.out.println(t2.getTime() - t1.getTime());
+      
+      
    }
 }

@@ -17,6 +17,7 @@ import org.jboss.windup.engine.visitor.EjbConfigurationVisitor;
 import org.jboss.windup.engine.visitor.HibernateConfigurationVisitor;
 import org.jboss.windup.engine.visitor.HibernateMappingVisitor;
 import org.jboss.windup.engine.visitor.JavaClassVisitor;
+import org.jboss.windup.engine.visitor.JavaDecompilerVisitor;
 import org.jboss.windup.engine.visitor.ManifestVisitor;
 import org.jboss.windup.engine.visitor.MavenFacetVisitor;
 import org.jboss.windup.engine.visitor.SpringConfigurationVisitor;
@@ -67,6 +68,9 @@ public class ListenerChainProvider {
 	
 	@Inject
 	private JavaClassVisitor javaClassVisitor;
+	
+	@Inject
+	private JavaDecompilerVisitor javaDecompilerVisitor;
 	
 	@Inject
 	private WebConfigurationVisitor webConfigurationVisitor;
@@ -176,7 +180,8 @@ public class ListenerChainProvider {
 		listenerChain.add(archiveTypeVisitor);  //sets the archive to a sub-type
 		listenerChain.add(manifestVisitor); //extracts manifest data.
 		
-		//listenerChain.add(javaClassVisitor); //loads java class information (imports / extends) to the graph
+		listenerChain.add(javaClassVisitor); //loads java class information (imports / extends) to the graph
+		listenerChain.add(javaDecompilerVisitor); //looks for classes without source, and decompiles the class.
 		listenerChain.add(xmlResourceVisitor); //loads xml resource information to the graph
 		
 		listenerChain.add(webConfigurationVisitor);
@@ -209,10 +214,7 @@ public class ListenerChainProvider {
 		//listenerChain.add(exportToMLreporter);
 		//listenerChain.add(mavenPomReporter);
 		//listenerChain.add(duplicateClassReporter); //reports all classes found multiple times on the classpath.
-		listenerChain.add(classNotFoundReporter); //reports all classes not found on the classpath.
-		
-		
-		
+		//listenerChain.add(classNotFoundReporter); //reports all classes not found on the classpath.
 		listenerChain.add(graphRenderReporter);
 		listenerChain.add(namespacesFoundReporter);
 		listenerChain.add(exportToDotReporter);

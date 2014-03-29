@@ -1,21 +1,27 @@
 package org.jboss.windup.graph.model.resource;
 
-import java.util.Iterator;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.zip.ZipFile;
 
 import com.tinkerpop.blueprints.Direction;
+import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.frames.Adjacency;
 import com.tinkerpop.frames.Property;
+import com.tinkerpop.frames.modules.javahandler.JavaHandler;
+import com.tinkerpop.frames.modules.javahandler.JavaHandlerClass;
+import com.tinkerpop.frames.modules.javahandler.JavaHandlerContext;
 import com.tinkerpop.frames.modules.typedgraph.TypeValue;
 
 @TypeValue("ArchiveResource")
 public interface ArchiveResource extends Resource {
 
-	@Adjacency(label="file", direction=Direction.OUT)
+	@Adjacency(label="fileReference", direction=Direction.OUT)
 	public FileResource getFileResource();
-
-	@Adjacency(label="file", direction=Direction.OUT)
+	
+	@Adjacency(label="fileReference", direction=Direction.OUT)
 	public void setFileResource(FileResource file);
-
 	
 	@Property("md5Hash")
 	public String getMD5Hash();
@@ -29,16 +35,14 @@ public interface ArchiveResource extends Resource {
 	@Property("sha1Hash")
 	public void setSHA1Hash(String sha1Hash);
 	
-	
 	@Property("archiveName")
 	public String getArchiveName();
 	
 	@Property("archiveName")
 	public void setArchiveName(String archiveName);
 	
-	
 	@Adjacency(label="child", direction=Direction.OUT)
-	public Iterator<ArchiveResource> getChildren();
+	public Iterable<ArchiveResource> getChildren();
 	
 	@Adjacency(label="child", direction=Direction.OUT)
 	public void addChild(final ArchiveResource resource);
@@ -49,4 +53,30 @@ public interface ArchiveResource extends Resource {
 	@Adjacency(label="child", direction=Direction.IN)
 	public void setChild(final ArchiveResource resource);
 	
+	@JavaHandler
+	public File asFile() throws IOException;
+
+	@JavaHandler
+	public ZipFile asZipFile() throws IOException;
+	
+	@JavaHandler
+	public InputStream asInputStream() throws IOException;
+	
+	abstract class Impl implements ArchiveResource, JavaHandlerContext<Vertex> {
+
+		@Override
+		public InputStream asInputStream() throws IOException {
+			return getFileResource().asInputStream();
+		}
+		
+		@Override
+		public File asFile() throws IOException {
+			return getFileResource().asFile();
+		}
+		
+		@Override
+		public ZipFile asZipFile() throws IOException {
+			return new ZipFile(this.asFile());
+		}
+	}
 }

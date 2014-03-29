@@ -88,16 +88,26 @@ public class ServerResourceReport {
 
 		}
 		
-		public JMXRow(String jmxObjectName) {
+		public JMXRow(String jmxObjectName, String qualifiedName) {
 			this.jmxObjectName = jmxObjectName;
+			this.qualifiedName = qualifiedName;
 		}
 
 		public String jmxObjectName;
+		public String qualifiedName;
 
 		public String getJmxObjectName() {
 			return jmxObjectName;
 		}
 
+		public String getQualifiedName() {
+			return qualifiedName;
+		}
+		
+		public void setQualifiedName(String qualifiedName) {
+			this.qualifiedName = qualifiedName;
+		}
+		
 		public void setJmxObjectName(String jmxObjectName) {
 			this.jmxObjectName = jmxObjectName;
 		}

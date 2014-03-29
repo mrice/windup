@@ -1,6 +1,5 @@
 package org.jboss.windup.graph.dao;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.ZipEntry;
@@ -61,14 +60,4 @@ public class ArchiveEntryDaoBean extends BaseDaoBean<ArchiveEntryResource> {
 		LOG.debug("Regex: "+regex);
 		return context.getFramed().query().has("type", typeValue).has("archiveEntry", Text.REGEX, regex).vertices(type);
 	}
-	
-	public InputStream asInputStream(ArchiveEntryResource entry) throws IOException {
-		//try and read the XML...
-		ZipFile zipFile = new ZipFile(new File(entry.getArchive().getFileResource().getFilePath()));
-		ZipEntry zipEntry = zipFile.getEntry(entry.getArchiveEntry());
-		InputStream is = zipFile.getInputStream(zipEntry);
-		
-		return is;
-	}
-	
 }

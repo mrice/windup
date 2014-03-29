@@ -56,7 +56,7 @@ public class ArchiveEntryIndexVisitor extends EmptyGraphVisitor {
 		
 		ZipFile zipFileReference = null;
 		try {
-			File zipFile = archiveDao.asFile(result);
+			File zipFile = result.asFile();
 			zipFileReference = new ZipFile(zipFile);
 			Enumeration<? extends ZipEntry> entries = zipFileReference.entries();
 			

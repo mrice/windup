@@ -1,4 +1,4 @@
-package org.jboss.windup.engine.visitor;
+package org.jboss.windup.engine.visitor.java;
 
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
@@ -11,6 +11,12 @@ import org.jboss.windup.graph.model.resource.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * This is an Apache BCEL Class Visitor, in order to read Bytecode details of the Java Class.
+ *  
+ * @author bradsdavis
+ *
+ */
 public class JavaClassReader extends EmptyVisitor {
 	private static final Logger LOG = LoggerFactory.getLogger(JavaClassReader.class);
 

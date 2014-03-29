@@ -2,7 +2,6 @@ package org.jboss.windup.graph.model.resource;
 
 import java.util.Iterator;
 
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.jboss.windup.graph.renderer.Label;
 
 import com.tinkerpop.blueprints.Direction;
@@ -66,11 +65,11 @@ public interface JavaClass extends Resource {
 
 	@GremlinGroovy("it.in('javaClassFacet').in('child').dedup")
 	public Iterator<JarArchive> providedBy();
+
+	@Adjacency(label="source", direction=Direction.OUT)
+	public void setSource(Resource source);
 	
-	abstract class Impl implements JavaClass {
-		@Override
-		public String toString() {
-			return ReflectionToStringBuilder.toString(this);
-		}
-	}
+	@Adjacency(label="source", direction=Direction.OUT)
+	public Resource getSource();
+	
 }

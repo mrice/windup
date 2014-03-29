@@ -25,7 +25,8 @@ public class FileResourceDaoBean extends BaseDaoBean<FileResource> {
 		if(entry == null) {
 			entry = this.create(null);
 			entry.setFilePath(filePath);
-			context.getGraph().commit();
+
+			this.context.getGraph().commit();
 		}
 		
 		return entry;

@@ -52,7 +52,7 @@ public class XmlResourceDaoBean extends BaseDaoBean<XmlResource> {
 		if(underlyingResource instanceof ArchiveEntryResource) {
 			InputStream is = null;
 			try {
-				is = archiveEntryDao.asInputStream((ArchiveEntryResource)underlyingResource);
+				is = underlyingResource.asInputStream();
 				Document parsedDocument = LocationAwareXmlReader.readXML(is);
 				return parsedDocument;
 			}

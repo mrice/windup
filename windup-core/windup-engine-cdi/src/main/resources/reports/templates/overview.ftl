@@ -2,7 +2,7 @@
 <html lang="en">
 
 <#macro tagRenderer tag>
-	<span class="label label-${tag.level.name()?lower_case}"><#nested/></span>
+	<span class="label label-${tag.level.name()?lower_case}"><#nested/></span> 
 </#macro>
  
 <#macro applicationRenderer application>

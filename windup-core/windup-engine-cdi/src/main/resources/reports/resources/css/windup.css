@@ -4,7 +4,7 @@ body {
 }
 
 .logo {
-  margin:20px;
+  margin:10px;
 }
 
 .theme-dropdown .dropdown-menu {
@@ -22,7 +22,7 @@ h3.panel-title span.s {
 }
 
 .windup-bar {
-	height: 150px; text-align: center; background: #FFF; border-bottom: 1px solid #c2cfdb;
+	height: 130px; text-align: center; background: #FFF; border-bottom: 1px solid #c2cfdb;
 }
 
 .windup-cta {

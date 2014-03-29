@@ -10,6 +10,9 @@ org.jboss.windup.config.parser.xml.when.OrHandler
 org.jboss.windup.config.parser.xml.when.ParamHandler
 org.jboss.windup.config.parser.xml.when.TrueHandler
 org.jboss.windup.config.parser.xml.when.WhenHandler
+org.jboss.windup.config.parser.xml.when.NamespaceHandler
+org.jboss.windup.config.parser.xml.when.XPathMatchesHandler
+org.jboss.windup.config.parser.xml.when.FilenameMatchesHandler
 
 org.jboss.windup.config.parser.xml.where.WhereHandler
 org.jboss.windup.config.parser.xml.where.MatchesHandler

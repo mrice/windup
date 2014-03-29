@@ -1,6 +1,8 @@
 package org.jboss.windup.engine;
 
 import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -18,11 +20,18 @@ public class WindupContext {
 	private static final Logger LOG = LoggerFactory.getLogger(WindupContext.class);
 	
 	private final File runDirectory;
+	private final Set<String> packagesToProfile;
 	private final GraphContext graphContext;
 	
 	public WindupContext() {
 		runDirectory = new File(FileUtils.getTempDirectory(), UUID.randomUUID().toString());
 		graphContext = new GraphContext(new File(runDirectory, "windup-graph"));
+		packagesToProfile = new HashSet<>();
+		packagesToProfile.add("org.jbpm");
+	}
+	
+	public Set<String> getPackagesToProfile() {
+		return packagesToProfile;
 	}
 	
 	public GraphContext getGraphContext() {

@@ -27,7 +27,6 @@ import org.jboss.windup.graph.model.resource.ArchiveResource;
 import org.jboss.windup.graph.model.resource.EarArchive;
 import org.jboss.windup.graph.model.resource.JarArchive;
 import org.jboss.windup.graph.model.resource.JavaClass;
-import org.jboss.windup.graph.model.resource.TempArchiveResource;
 import org.jboss.windup.graph.model.resource.WarArchive;
 import org.jboss.windup.graph.model.resource.XmlResource;
 
@@ -126,7 +125,6 @@ public class GraphContext {
 		        .withClass(org.jboss.windup.graph.model.resource.Resource.class)
 			    .withClass(WarArchive.class)
 			    .withClass(XmlResource.class)
-			    .withClass(TempArchiveResource.class)
 			    
 			    .withClass(EjbEntityFacet.class)
 			    .withClass(EjbSessionBeanFacet.class)

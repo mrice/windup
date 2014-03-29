@@ -1,7 +1,8 @@
 package org.jboss.windup.engine.visitor;
 
-import java.io.InputStream;
 import static org.joox.JOOX.$;
+
+import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -66,7 +67,7 @@ public class XmlResourceVisitor extends EmptyGraphVisitor {
 		//try and read the XML...
 		InputStream is = null;
 		try {
-			is = archiveEntryDao.asInputStream(entry);
+			is = entry.asInputStream();
 			
 			//read it to a Document object.
 			Document parsedDocument = LocationAwareXmlReader.readXML(is);

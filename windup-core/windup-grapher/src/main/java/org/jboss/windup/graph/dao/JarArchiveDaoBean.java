@@ -1,6 +1,5 @@
 package org.jboss.windup.graph.dao;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -34,8 +33,7 @@ public class JarArchiveDaoBean extends BaseDaoBean<JarArchive> {
 	}
 
 	public JarFile asJarFile(JarArchive archive) throws IOException {
-		File file = new File(archive.getFileResource().getFilePath());
-		return new JarFile(file);
+		return new JarFile(archive.asFile());
 	}
 
 	public Iterable<JarArchive> findUnusedJars() {

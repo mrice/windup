@@ -2,7 +2,7 @@ package org.jboss.windup.graph.model.resource;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 
 import com.tinkerpop.blueprints.Vertex;
@@ -21,16 +21,29 @@ public interface FileResource extends Resource {
 	public void setFilePath(String filePath);
 	
 	@JavaHandler
-	public InputStream asInputStream() throws FileNotFoundException;
+	public File asFile() throws IOException;
 	
-	abstract class Impl implements FileResource, JavaHandlerContext<Vertex> {
+	@JavaHandler
+	public InputStream asInputStream() throws IOException;
+
+	abstract class Impl implements FileResource, Resource, JavaHandlerContext<Vertex> {
+		
 		@Override
-		public InputStream asInputStream() throws FileNotFoundException {
+		public InputStream asInputStream() throws IOException {
 			if(this.getFilePath() != null) {
 				File file = new File(getFilePath());
 				return new FileInputStream(file);
 			}
 			return null;
+		}
+		
+		@Override
+		public File asFile() throws IOException {
+			if(this.getFilePath() != null) {
+				File file = new File(getFilePath());
+				return file;
+			}
+			return null; 
 		}
 	}
 }

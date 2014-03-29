@@ -1,29 +1,151 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<j:rules xmlns:base="http://windup.jboss.org/v1/base" xmlns:j="http://windup.jboss.org/v1/xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<rules xmlns:base="http://windup.jboss.org/v1/base" xmlns="http://windup.jboss.org/v1/xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="http://windup.jboss.org/v1/xml ../../main/schemas/rules/windup-xml.xsd ">
-   <j:xml-action>
-      <j:namespace prefix="test" uri="http://tempuri.org"/>
-      <j:when>
-         <j:and>
-            <j:or>
-               <j:dtd-public-id matches="lng"/>
-               <j:md5 equals="xyz"/>
-               <j:sha1 equals="abc"/>
-               <j:xpath-exists matches=""/>
-               <j:not>
-                  <j:sha1 equals="notval"/>
-               </j:not>
-            </j:or>
-            <j:filename matches=".*.xml"/>
-         </j:and>
-         <j:foreach target="/test:some-elemnet">
-            <j:xpath-variable name="abc" target="./@attribute"/>
-            <j:add-summary description="This is ${abc}"></j:add-summary>
-         </j:foreach>
-      </j:when>
-   </j:xml-action>
-   <j:xml-action>
-      <j:add-link href="http://test.com" description="abc"/>
-      <j:add-spec-version version="kn"/>
-   </j:xml-action>
-</j:rules>
+
+	<xml-rule>
+		<namespace prefix="test" uri="http://tempuri.org" />
+		<when>
+			<dtd-public-id matches="{example}" />
+			<md5 matches="{md5}" />
+			<sha1 matches="{sha1}" />
+			<filename matches="{filename}" />
+		</when>
+		
+		<perform>
+			<log message="Public ID: {publicId}" />
+			<log message="MD5: {md5}" />
+			<log message="SHA1: {sha1}" />
+			<log message="File Name: {filename}" />
+			
+			<!-- How would I accomplish the scoped variables below? -->
+		</perform>
+		
+		<where name="publicId">
+			<matches pattern="some publid id" />
+		</where>
+		<where name="md5">
+			<matches pattern="343234535" />
+		</where>
+		<where name="sha1">
+			<matches pattern="34435435435" />
+		</where>
+		<where name="filename">
+			<matches pattern="*.xml" />
+		</where>
+	</xml-rule>
+
+
+
+	<!-- Option with variable extraction in perform. -->
+	<xml-rule>
+		<namespace prefix="test" uri="http://tempuri.org" />
+		<when>
+			<dtd-public-id matches="some publid id" />
+			<md5 matches="343234535" />
+			<sha1 matches="34435435435" />
+			<filename matches="*.xml" />
+		</when>
+		
+		<perform>
+			<!-- Approach sets variable and has some predefined actions to extract values -->
+			<variable name="publidId" extract="xml:dtd-publid-id"/>
+			<variable name="filename" extract="file:name"/>
+						
+			<log message="Public ID: {publicId}" />
+			<log message="File Name: {filename}" />
+			
+			<xpath:for-each select="//element">
+				<!-- this allows the same variable, but nested. -->
+				<variable name="ex">
+					<xpath:value-of select="./@example-attribute/text()"/>
+				</variable>
+				<add-line-summary description="This is some value: {ex}"/>
+			</xpath:for-each>
+		</perform>
+	</xml-rule>
+	
+	
+	
+	
+	
+	<!-- Simple classification. -->
+	<xml-rule>
+		<namespace prefix="mvn" uri="http://maven.apache.org/POM/4.0.0" />
+		<when>
+			<xpath:if test="//mvn:pom" />
+		</when>
+		<perform>
+			<variable name="pomVersion" extract="{xpath:/mvn:pom/mvn:modelVersion}"/>
+		
+			<add-classification description="Maven POM"/>
+			<add-specification description="{pomVersion}"/>
+		</perform>
+	</xml-rule>
+	
+	
+	<!-- Simple classification. -->
+	<xml-rule>
+		<namespace prefix="mvn" uri="http://maven.apache.org/POM/4.0.0" />
+		<when>
+			<xpath:if test="//mvn:pom" />
+		</when>
+		<perform>
+			<add-classification description="Maven POM"/>
+		</perform>
+	</xml-rule>
+	
+	
+	
+	
+	<!-- Simple classification. -->
+	<java-rule>
+		<when>
+			<qualifiedName matches="org.jboss.*" />
+			<extends matches="org.jboss.*" />
+			<implements matches="org.jboss.*" />
+			<classAnnotationType matches="org.jboss.*" />
+		</when>
+		
+		<perform>		
+			<variable name="classAnnotation" extract="{java:classAnnotation}"/>
+			<variable name="qualifiedName" extract="{java:qualifiedName}"/>
+			<for-each select="method[name='qualifiedName']//param[type='']">
+				
+			</for-each>
+		</perform>
+	</java-rule>
+
+	
+	<java-rule>
+		<perform>
+			<for-each select="java:method">
+				class.methods.filter{name="someMethod"}.annotations.filter{type="com.example.AnnotationType"}
+				class.out('fields').filter{type="com.example.SimpleClass", scope="public"}.
+			</for-each>
+		</perform>
+	</java-rule>
+
+
+		<windup:java-hint source-type="INHERITANCE" regex="com.sonicsw.xq.XQService" effort="4">
+			<![CDATA[
+				Sonic ESB services inherit from XQService.  In Camel, this can be achieved through the simple Java Bean Camel Component.
+
+				* [Camel Java Bean Component](http://camel.apache.org/bean.html)
+			]]>
+		</windup:java-hint>
+source-type="METHOD" regex="org.jboss.soa.esb.helpers.ConfigTree" description="JBoss ESB 5 Action Handler"/>
+	
+	<java-rule>
+		<!-- for all java files -->
+		<when>
+			<true/>
+		</when>
+		<perform>
+			<for-each select="type:javax.jms.QueueConnectionFactory">
+				
+			</for-each>
+		</perform>
+	</java-rule>
+	
+   
+</rules>

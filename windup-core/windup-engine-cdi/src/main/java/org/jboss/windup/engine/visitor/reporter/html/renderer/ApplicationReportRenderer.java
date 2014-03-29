@@ -13,14 +13,17 @@ import org.jboss.windup.engine.visitor.base.EmptyGraphVisitor;
 import org.jboss.windup.engine.visitor.reporter.html.model.ApplicationReport;
 import org.jboss.windup.engine.visitor.reporter.html.model.ArchiveReport;
 import org.jboss.windup.engine.visitor.reporter.html.model.ArchiveReport.ResourceReportRow;
-import org.jboss.windup.engine.visitor.reporter.html.model.Effort;
 import org.jboss.windup.engine.visitor.reporter.html.model.Level;
 import org.jboss.windup.engine.visitor.reporter.html.model.Link;
-import org.jboss.windup.engine.visitor.reporter.html.model.Tag;
-import org.jboss.windup.graph.dao.JarArchiveDaoBean;
+import org.jboss.windup.graph.dao.ApplicationReferenceDaoBean;
+import org.jboss.windup.graph.model.meta.ApplicationReference;
+import org.jboss.windup.graph.model.resource.ArchiveEntryResource;
 import org.jboss.windup.graph.model.resource.ArchiveResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.tinkerpop.blueprints.Direction;
+import com.tinkerpop.blueprints.Vertex;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -31,10 +34,9 @@ public class ApplicationReportRenderer extends EmptyGraphVisitor {
 	@Inject
 	private WindupContext context;
 	
-
 	@Inject
-	private JarArchiveDaoBean jarDao;
-	
+	private ApplicationReferenceDaoBean appRefDao;
+
 	private final Configuration cfg;
 	
 	public ApplicationReportRenderer() {
@@ -45,23 +47,23 @@ public class ApplicationReportRenderer extends EmptyGraphVisitor {
 	
 	@Override
 	public void run() {
-		for(ArchiveResource entry : jarDao.getAll()) {
-			visitArchive(entry);
+		ApplicationReport applicationReport = new ApplicationReport();
+		applicationReport.setApplicationName("Application Name");
+		
+		for(ApplicationReference app : appRefDao.getAll()) {
+			Vertex reference = app.getMetaReference();
+			LOG.info("Vertex: "+reference);
 		}
-	}
-
-	@Override
-	public void visitArchive(ArchiveResource entry) {
+		
 		try {
 			Template template = cfg.getTemplate("/reports/templates/application.ftl");
 			
 			Map<String, Object> objects = new HashMap<String, Object>();
-			objects.put("application", generageReports());
+			objects.put("application", applicationReport);
 			
 			File runDirectory = context.getRunDirectory();
 			File archiveReportDirectory = new File(runDirectory, "applications");
-			File archiveDirectory = new File(archiveReportDirectory, "x");
-			LOG.info("Archive Name: "+entry.getArchiveName());
+			File archiveDirectory = new File(archiveReportDirectory, "application");
 			FileUtils.forceMkdir(archiveDirectory);
 			File archiveReport = new File(archiveDirectory, "index.html");
 			
@@ -74,27 +76,26 @@ public class ApplicationReportRenderer extends EmptyGraphVisitor {
 		}
 	}
 	
-	
-	protected ApplicationReport generageReports() {
-		ApplicationReport applicationReport = new ApplicationReport();
-		applicationReport.setApplicationName("Example Application");
+	protected ArchiveReport generageReports(ArchiveResource entry) {
 		
-		for(int i=0; i<10; i++) {
-			ArchiveReport report = new ArchiveReport();
-			applicationReport.getArchives().add(report);
-			report.setApplicationPath("Test Application "+i);
-			report.setLevel(Level.INFO);
-			
-			for(int j=0; j<10; j++) {
-				ResourceReportRow resourceReport = new ResourceReportRow();
-				report.getResources().add(resourceReport);
-				resourceReport.setEffort(Effort.HIGH);
-				resourceReport.setResourceLink(new Link("#", "Resource "+j));
-				resourceReport.getIssueTags().add(new Tag("Test Danger 1.x", Level.DANGER));
-				resourceReport.getTechnologyTags().add(new Tag("Test Info 1.x", Level.INFO));
+		ArchiveReport report = new ArchiveReport();
+		report.setApplicationPath(entry.getArchiveName());
+		report.setLevel(Level.PRIMARY);
+		
+		for(ArchiveResource resource : entry.getChildren()) {
+			if (resource instanceof ArchiveEntryResource) {
+				ArchiveEntryResource archiveEntry = (ArchiveEntryResource) resource;
+				
+					String type = resource.asVertex().getProperty("type");
+					
+					ResourceReportRow resourceReport = new ResourceReportRow();
+					resourceReport.setResourceLink(new Link("#", ((ArchiveEntryResource) resource).getArchiveEntry()));
+					report.getResources().add(resourceReport);
 			}
+			
+			
 		}
 		
-		return applicationReport;
+		return report;
 	}
 }

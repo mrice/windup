@@ -1,5 +1,7 @@
 package org.jboss.windup.engine.visitor;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
 
 import org.apache.commons.lang.StringUtils;
@@ -67,6 +69,7 @@ public class ArchiveTypingVisitor extends EmptyGraphVisitor {
 			
 			LOG.warn("Extension not routed for: "+filePath);
 		}
+		
 	}
 	
 }

@@ -51,8 +51,7 @@
 
 
     <div class="container theme-showcase" role="main">
-
-	<#if server.databaseResources?has_content>
+	<#if server.databases?has_content>
     <div class="panel panel-primary">
         <div class="panel-heading">
             <h3 class="panel-title">Database Resource</h3>
@@ -67,7 +66,7 @@
                 <tr>
                   <th>Database Type</th><th>JNDI Name</th>
                 </tr>
-				<#list server.databaseResources as databaseResource>
+				<#list server.databases as databaseResource>
                 	<tr>
                 		<td>${databaseResource.databaseType}</td>
                 		<td>${databaseResource.jndiName}</td>
@@ -80,7 +79,7 @@
       </div>
 	</#if>
 	
-	<#if server.jmsResources?has_content>
+	<#if server.queues?has_content>
     <div class="panel panel-primary">
         <div class="panel-heading">
             <h3 class="panel-title">JMS Resources</h3>
@@ -95,7 +94,7 @@
                 <tr>
                   <th>JMS Type</th><th>JNDI Name</th>
                 </tr>
-				<#list server.jmsResources as jmsResource>
+				<#list server.queues as jmsResource>
                 	<tr>
                 		<td>${jmsResource.jmsType}</td>
                 		<td>${jmsResource.jndiName}</td>
@@ -108,7 +107,7 @@
     </div>
     </#if>
     
-    <#if server.jmxResources?has_content>
+    <#if server.jmxBeans?has_content>
     <div class="panel panel-primary">
         <div class="panel-heading">
             <h3 class="panel-title">JMX Resources</h3>
@@ -123,9 +122,9 @@
                 <tr>
                   <th>Object Name</th><th>Java Class</th>
                 </tr>
-				<#list server.jmxResources as jmxResource>
+				<#list server.jmxBeans as jmxResource>
                 	<tr>
-                		<td>${jmxResource.objectName}</td>
+                		<td>${jmxResource.jmxObjectName}</td>
                 		<td>${jmxResource.qualifiedName}</td>
                 	</tr>
                 </#list>

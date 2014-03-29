@@ -29,9 +29,6 @@ public class ServerResourceReportRenderer extends EmptyGraphVisitor {
 	private WindupContext context;
 	
 
-	@Inject
-	private JarArchiveDaoBean jarDao;
-	
 	private final Configuration cfg;
 	
 	public ServerResourceReportRenderer() {
@@ -72,7 +69,7 @@ public class ServerResourceReportRenderer extends EmptyGraphVisitor {
 		}
 		
 		for(int i=0; i<10; i++) {
-			report.getJmxBeans().add(new JMXRow("someObject"+i));
+			report.getJmxBeans().add(new JMXRow("someObject"+i, "com.example.jmx.JMXBeanName"));
 		}
 		
 		for(int i=0; i<10; i++) {

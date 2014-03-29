@@ -1,5 +1,6 @@
 package org.jboss.windup.engine.visitor;
 
+import java.io.File;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
@@ -12,9 +13,10 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.windup.engine.util.ZipUtil;
 import org.jboss.windup.engine.visitor.base.EmptyGraphVisitor;
+import org.jboss.windup.graph.dao.ApplicationReferenceDaoBean;
 import org.jboss.windup.graph.dao.ArchiveDaoBean;
 import org.jboss.windup.graph.dao.FileResourceDaoBean;
-import org.jboss.windup.graph.dao.TempFileArchiveEntryDaoBean;
+import org.jboss.windup.graph.model.meta.ApplicationReference;
 import org.jboss.windup.graph.model.resource.ArchiveResource;
 import org.jboss.windup.graph.model.resource.FileResource;
 import org.slf4j.Logger;
@@ -37,8 +39,8 @@ public class ZipArchiveGraphVisitor extends EmptyGraphVisitor {
 	private ArchiveDaoBean archiveDao;
 	
 	@Inject
-	private TempFileArchiveEntryDaoBean tempFileArchiveEntryDao;
-
+	private ApplicationReferenceDaoBean applicationReferenceDao;
+	
 	private Set<String> getZipExtensions() {
 		Set<String> extensions = new HashSet<String>();
 		extensions.add(".war");
@@ -71,20 +73,27 @@ public class ZipArchiveGraphVisitor extends EmptyGraphVisitor {
 	
 	@Override
 	public void visitFile(FileResource file) {
+		this.fileDao.commit();
 		//now, check to see whether it is a JAR, and republish the typed value.
 		String filePath = file.getFilePath();
 		
 		if(endsWithExtension(filePath)) {
-			java.io.File reference = new java.io.File(filePath);
-			ZipFile zipFile = null;
+			ZipFile zipFile = null;			
 			try {
+				java.io.File reference = new File(file.getFilePath());
 				zipFile = new ZipFile(reference);
 				
 				//go ahead and make it into an archive.
 				
 				ArchiveResource archive = archiveDao.create(null);
+				
+				//mark the archive as a top level archive.
+				ApplicationReference applicationReference = applicationReferenceDao.create(null);
+				archive.addMeta(applicationReference);
+				
 				archive.setArchiveName(reference.getName());
 				archive.setFileResource(file);
+				this.fileDao.commit();
 				
 				//first, make the file reference.
 				Enumeration<?> entries = zipFile.entries();
@@ -99,8 +108,7 @@ public class ZipArchiveGraphVisitor extends EmptyGraphVisitor {
 						String subArchiveName = StringUtils.substringAfterLast(entry.getName(), "/");
 						java.io.File subArchiveTempFile = ZipUtil.unzipToTemp(zipFile, entry);
 						org.jboss.windup.graph.model.resource.FileResource subArchiveTempFileReference = fileDao.getByFilePath(subArchiveTempFile.getAbsolutePath());
-						subArchiveTempFileReference = tempFileArchiveEntryDao.castToType(subArchiveTempFileReference);
-						
+
 						ArchiveResource subArchive = archiveDao.create(null);
 						subArchive.setArchiveName(subArchiveName);
 						subArchive.setFileResource(subArchiveTempFileReference);
@@ -116,7 +124,5 @@ public class ZipArchiveGraphVisitor extends EmptyGraphVisitor {
 				IOUtils.closeQuietly(zipFile);
 			}
 		}
-	
 	}
-
 }

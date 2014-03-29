@@ -19,5 +19,5 @@ public interface ArchiveEntryResource extends Resource {
 	
 	@Adjacency(label="child", direction=Direction.IN)
 	public void setArchive(ArchiveResource archive);
-	
+
 }
