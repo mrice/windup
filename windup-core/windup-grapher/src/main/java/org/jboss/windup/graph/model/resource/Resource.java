@@ -1,5 +1,6 @@
 package org.jboss.windup.graph.model.resource;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
@@ -24,4 +25,6 @@ public interface Resource extends VertexFrame {
 	public void addMeta(final Meta resource);
 
 	public InputStream asInputStream() throws IOException;
+	
+	public File asFile() throws IOException;
 }

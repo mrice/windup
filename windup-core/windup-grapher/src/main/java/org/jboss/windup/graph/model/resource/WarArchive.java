@@ -6,11 +6,9 @@ import org.jboss.windup.graph.model.meta.javaclass.SpringBeanFacet;
 import org.jboss.windup.graph.model.meta.xml.EjbConfigurationFacet;
 
 import com.tinkerpop.frames.annotations.gremlin.GremlinGroovy;
-import com.tinkerpop.frames.modules.javahandler.JavaHandlerClass;
 import com.tinkerpop.frames.modules.typedgraph.TypeValue;
 
 @TypeValue("WarArchiveResource")
-@JavaHandlerClass(ArchiveResourceImpl.class)
 public interface WarArchive extends JarArchive {
 
 	@GremlinGroovy("it.out('child').has('type', 'JarArchiveResource')")

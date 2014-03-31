@@ -19,9 +19,15 @@ import java.util.Map;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteWatchdog;
+import org.apache.commons.exec.environment.DefaultProcessingEnvironment;
+import org.apache.commons.exec.environment.EnvironmentUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import com.sleepycat.je.Environment;
 
 /**
  * Facade for the Jadretro library's main method and the Jad decompiler execution. 
@@ -97,16 +103,21 @@ public class JadretroDecompilerAdapter implements DecompilerAdapter {
 			cmdLine.addArgument("java");
 			cmdLine.addArgument("${classLocation}");
 			
+			
 			Map<String, Object> argMap = new HashMap<String, Object>();
 			argMap.put("outputLocation", sourceOutputLocation);
 			argMap.put("classLocation", classLocation);
 			cmdLine.setSubstitutionMap(argMap);
 			
+			LOG.info("Command: "+cmdLine);
+			
 			DefaultExecutor executor = new DefaultExecutor();
 			executor.setExitValue(0);
+			executor.setWorkingDirectory(FileUtils.getUserDirectory());
 			ExecuteWatchdog watchdog = new ExecuteWatchdog(60000);
+			
 			executor.setWatchdog(watchdog);
-			int exitValue = executor.execute(cmdLine);
+			int exitValue = executor.execute(cmdLine, EnvironmentUtils.getProcEnvironment());
 			
 			LOG.debug("Decompiler exited with exit code: "+exitValue);
 			

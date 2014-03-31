@@ -113,7 +113,7 @@ public class XmlResourceVisitor extends EmptyGraphVisitor {
 			
 		}
 		catch(Exception e) {
-			LOG.error("Encountered Exception: "+e.getMessage());
+			LOG.error("Encountered Exception: "+e.getMessage(), e);
 		} finally {
 			IOUtils.closeQuietly(is);
 		}

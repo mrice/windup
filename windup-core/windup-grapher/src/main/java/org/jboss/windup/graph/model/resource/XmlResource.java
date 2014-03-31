@@ -1,5 +1,7 @@
 package org.jboss.windup.graph.model.resource;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
@@ -46,7 +48,20 @@ public interface XmlResource extends Resource {
 	@JavaHandler
 	public Document asDocument();
 	
+	@JavaHandler
+	public InputStream asInputStream() throws IOException;
+	
 	abstract class Impl implements XmlResource, JavaHandlerContext<Vertex> {
+		
+		@Override
+		public InputStream asInputStream() throws IOException {
+			return this.getResource().asInputStream();
+		}
+		
+		@Override
+		public File asFile() throws IOException {
+			return this.getResource().asFile();
+		}
 		
 		@Override
 		public Document asDocument() {

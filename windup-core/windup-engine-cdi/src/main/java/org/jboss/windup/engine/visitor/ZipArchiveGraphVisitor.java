@@ -73,7 +73,6 @@ public class ZipArchiveGraphVisitor extends EmptyGraphVisitor {
 	
 	@Override
 	public void visitFile(FileResource file) {
-		this.fileDao.commit();
 		//now, check to see whether it is a JAR, and republish the typed value.
 		String filePath = file.getFilePath();
 		
@@ -93,7 +92,6 @@ public class ZipArchiveGraphVisitor extends EmptyGraphVisitor {
 				
 				archive.setArchiveName(reference.getName());
 				archive.setFileResource(file);
-				this.fileDao.commit();
 				
 				//first, make the file reference.
 				Enumeration<?> entries = zipFile.entries();
