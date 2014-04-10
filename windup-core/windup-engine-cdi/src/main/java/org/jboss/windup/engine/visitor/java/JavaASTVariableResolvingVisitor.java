@@ -12,7 +12,6 @@
 package org.jboss.windup.engine.visitor.java;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -32,6 +31,7 @@ import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.InfixExpression;
+import org.eclipse.jdt.core.dom.InstanceofExpression;
 import org.eclipse.jdt.core.dom.MarkerAnnotation;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
@@ -40,20 +40,24 @@ import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.NumberLiteral;
 import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.SimpleName;
+import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.StringLiteral;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.eclipse.jdt.core.dom.TypeDeclarationStatement;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.jboss.windup.engine.WindupContext;
 import org.jboss.windup.graph.dao.JavaClassDaoBean;
 import org.jboss.windup.graph.model.resource.JavaClass;
 
-
-
+/**
+ * Creates blacklist output.
+ * 
+ * @author bradsdavis
+ *
+ */
 public class JavaASTVariableResolvingVisitor extends ASTVisitor {
 	private static final Log LOG = LogFactory.getLog(JavaASTVariableResolvingVisitor.class);
 
@@ -66,6 +70,7 @@ public class JavaASTVariableResolvingVisitor extends ASTVisitor {
 
 	Set<String> names = new HashSet<String>();
 	Map<String, String> nameInstance = new HashMap<String, String>();
+	Set<String> blacklistCandidates = new HashSet<String>();
 
 	public JavaASTVariableResolvingVisitor(CompilationUnit cu, JavaClassDaoBean javaClassDao, WindupContext context, JavaClass javaClass) {
 		this.cu = cu;
@@ -73,6 +78,12 @@ public class JavaASTVariableResolvingVisitor extends ASTVisitor {
 		this.javaClass = javaClass;
 		this.windupContext = context;
 		
+		//creates an in-memory cache if all qualified blacklist candidates.
+		//this set is leveraged to determine whether to catalog.
+		for(JavaClass clz : javaClassDao.findLeveragedCandidateBlacklists(javaClass)) {
+			LOG.info("Blacklist w/in Class["+javaClass.getQualifiedName()+"]: "+clz.getQualifiedName());
+			blacklistCandidates.add(clz.getQualifiedName());
+		}
 		
 		for (JavaClass javaImport : javaClass.getImports()) {
 			classNameToFullyQualified.put(StringUtils.substringAfterLast(javaImport.getQualifiedName(), "."), javaImport.getQualifiedName());
@@ -81,6 +92,10 @@ public class JavaASTVariableResolvingVisitor extends ASTVisitor {
 		this.names.add("this");
 		this.nameInstance.put("this", javaClass.getQualifiedName());
 		this.classNameToFullyQualified.put(StringUtils.substringAfterLast(javaClass.getQualifiedName(), "."), javaClass.getQualifiedName());
+		
+		
+		
+		
 	}
 
 	private void processInterest(String interest, int lineStart, String decoratorPrefix, SourceType sourceType) {
@@ -90,6 +105,10 @@ public class JavaASTVariableResolvingVisitor extends ASTVisitor {
 			if (classNameToFullyQualified.containsKey(sourceString)) {
 				sourceString = classNameToFullyQualified.get(sourceString);
 			}
+		}
+		
+		if(!blacklistCandidates.contains(sourceString)) {
+			return;
 		}
 
 		
@@ -109,6 +128,11 @@ public class JavaASTVariableResolvingVisitor extends ASTVisitor {
 				sourceString = classNameToFullyQualified.get(sourceString);
 			}
 		}
+		
+
+		if(!blacklistCandidates.contains(sourceString)) {
+			return;
+		}
 
 		ClassCandidate dr = new ClassCandidate(sourcePosition, sourceString);
 		//results.add(dr);
@@ -127,15 +151,15 @@ public class JavaASTVariableResolvingVisitor extends ASTVisitor {
 				sourceString = classNameToFullyQualified.get(sourceString);
 			}
 		}
+		
+
+		if(!blacklistCandidates.contains(sourceString)) {
+			return;
+		}
 
 		ClassCandidate dr = new ClassCandidate(sourcePosition, sourceString);
 		//TODO: results.add(dr);
 		LOG.info("Candidate: "+dr);
-	}
-
-	@Override
-	public boolean visit(TypeDeclarationStatement node) {
-		return super.visit(node);
 	}
 
 	@Override
@@ -169,7 +193,15 @@ public class JavaASTVariableResolvingVisitor extends ASTVisitor {
 			}
 		}
 
-		return true;
+		return super.visit(node);
+	}
+	
+	@Override
+	public boolean visit(InstanceofExpression node) {
+		Type type = node.getRightOperand();
+		processType(type, "Instance Of", SourceType.TYPE);
+		
+		return super.visit(node);
 	}
 
 	public boolean visit(org.eclipse.jdt.core.dom.ThrowStatement node) {
@@ -178,14 +210,14 @@ public class JavaASTVariableResolvingVisitor extends ASTVisitor {
 			processType(cic.getType(), "Throwing", SourceType.TYPE);
 		}
 
-		return true;
+		return super.visit(node);
 	}
 
 	public boolean visit(org.eclipse.jdt.core.dom.CatchClause node) {
 		Type catchType = node.getException().getType();
 		processType(catchType, "Catching", SourceType.TYPE);
 
-		return true;
+		return super.visit(node);
 	}
 
 	@Override
@@ -220,7 +252,7 @@ public class JavaASTVariableResolvingVisitor extends ASTVisitor {
 
 		return super.visit(node);
 	}
-
+	
 	@Override
 	public boolean visit(FieldDeclaration node) {
 		for (int i = 0; i < node.fragments().size(); ++i) {
@@ -240,6 +272,8 @@ public class JavaASTVariableResolvingVisitor extends ASTVisitor {
 		return true;
 	}
 
+	
+	
 	@Override
 	public boolean visit(MarkerAnnotation node) {
 		processName(node.getTypeName(), "Annotation", cu.getLineNumber(node.getStartPosition()));
@@ -258,6 +292,37 @@ public class JavaASTVariableResolvingVisitor extends ASTVisitor {
 		return super.visit(node);
 	}
 
+	public boolean visit(TypeDeclaration node) {
+		Object clzInterfaces = node.getStructuralProperty(TypeDeclaration.SUPER_INTERFACE_TYPES_PROPERTY);
+		Object clzSuperClasses = node.getStructuralProperty(TypeDeclaration.SUPERCLASS_TYPE_PROPERTY);
+		
+		if(clzInterfaces != null) {
+			if(List.class.isAssignableFrom(clzInterfaces.getClass())) {
+				List<?> clzInterfacesList = (List<?>)clzInterfaces;
+				for(Object clzInterface : clzInterfacesList) {
+					if(clzInterface instanceof SimpleType) {
+						processType((SimpleType)clzInterface, "Implements Type", SourceType.TYPE);
+					}
+					else {
+						LOG.warn(clzInterface);
+					}
+				}
+			}
+			LOG.info(clzInterfaces.getClass());
+		}
+		if(clzSuperClasses != null) {
+			if(clzSuperClasses instanceof SimpleType) {
+				processType((SimpleType)clzSuperClasses, "Extends Type", SourceType.TYPE);
+			}
+			else {
+				LOG.warn(clzSuperClasses);
+			}
+		}
+		
+		
+		return super.visit(node);
+	}
+	
 	@Override
 	public boolean visit(VariableDeclarationStatement node) {
 		for (int i = 0; i < node.fragments().size(); ++i) {
@@ -271,12 +336,13 @@ public class JavaASTVariableResolvingVisitor extends ASTVisitor {
 			VariableDeclarationFragment frag = (VariableDeclarationFragment) node.fragments().get(i);
 			this.names.add(frag.getName().getIdentifier());
 			this.nameInstance.put(frag.getName().toString(), nodeType.toString());
-
-			processType(node.getType(), "Declaring type", SourceType.TYPE);
 		}
+		processType(node.getType(), "Declaring type", SourceType.TYPE);
 
-		return true;
+		return super.visit(node);
 	}
+	
+	
 
 	@Override
 	public boolean visit(ImportDeclaration node) {
@@ -294,7 +360,7 @@ public class JavaASTVariableResolvingVisitor extends ASTVisitor {
 			}
 		}
 
-		return true;
+		return super.visit(node);
 	}
 
 	/***
@@ -335,7 +401,7 @@ public class JavaASTVariableResolvingVisitor extends ASTVisitor {
 		// Here is the call to blacklist
 		processInterest(resolvedMethodCall, cu.getLineNumber(node.getStartPosition()), "Usage of", SourceType.METHOD);
 
-		return true;
+		return super.visit(node);
 	}
 
 	private List<String> methodParameterGuesser(List arguements) {

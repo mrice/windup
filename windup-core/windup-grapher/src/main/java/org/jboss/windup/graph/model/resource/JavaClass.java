@@ -82,7 +82,7 @@ public interface JavaClass extends Resource {
 	
 	@GremlinGroovy("it.sideEffect{x=it}.out('extends', 'imports', 'implements').dedup().filter{it!=x}")
 	public Iterable<JavaClass> dependsOnJavaClass();
-
+	
 	@GremlinGroovy("it.sideEffect{x=it}.in('extends', 'imports', 'implements').dedup().filter{it!=x}")
 	public Iterable<JavaClass> providesForJavaClass();
 

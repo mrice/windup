@@ -1,6 +1,8 @@
 package org.jboss.windup.graph.dao;
 
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import org.jboss.windup.graph.model.resource.JavaClass;
 
@@ -104,6 +106,17 @@ public class JavaClassDaoBean extends BaseDaoBean<JavaClass> {
 				.in("extends", "imports", "implements")
 				.dedup();
 		return context.getFramed().frameVertices(pipeline, JavaClass.class);
+	}
+	
+	public Iterable<JavaClass> findLeveragedCandidateBlacklists(JavaClass clz) {
+		Set<JavaClass> results = new HashSet<JavaClass>();
+		for(JavaClass javaClz : clz.dependsOnJavaClass()) {
+			if(javaClz.isBlacklistCandidate()) {
+				results.add(javaClz);
+			}
+		}
+		
+		return results;
 	}
 	
 	
