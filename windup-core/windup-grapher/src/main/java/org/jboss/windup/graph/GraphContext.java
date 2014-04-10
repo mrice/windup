@@ -27,6 +27,8 @@ import org.jboss.windup.graph.model.resource.ArchiveResource;
 import org.jboss.windup.graph.model.resource.EarArchive;
 import org.jboss.windup.graph.model.resource.JarArchive;
 import org.jboss.windup.graph.model.resource.JavaClass;
+import org.jboss.windup.graph.model.resource.JavaMethod;
+import org.jboss.windup.graph.model.resource.JavaParameter;
 import org.jboss.windup.graph.model.resource.WarArchive;
 import org.jboss.windup.graph.model.resource.XmlResource;
 
@@ -99,6 +101,9 @@ public class GraphContext {
 		TitanKey qualifiedNameKey = graph.makeKey("qualifiedName").dataType(String.class).
 				indexed(Vertex.class).unique().make();
 		
+		TitanKey methodNameKey = graph.makeKey("methodName").dataType(String.class).
+				indexed(Vertex.class).make();
+		
 		TitanKey archiveEntryKey = graph.makeKey("archiveEntry").dataType(String.class).
 				indexed("search", Vertex.class).make();
 		
@@ -122,6 +127,8 @@ public class GraphContext {
 			    .withClass(org.jboss.windup.graph.model.resource.FileResource.class)
 		        .withClass(JarArchive.class)
 			    .withClass(JavaClass.class)
+			    .withClass(JavaMethod.class)
+			    .withClass(JavaParameter.class)
 		        .withClass(org.jboss.windup.graph.model.resource.Resource.class)
 			    .withClass(WarArchive.class)
 			    .withClass(XmlResource.class)

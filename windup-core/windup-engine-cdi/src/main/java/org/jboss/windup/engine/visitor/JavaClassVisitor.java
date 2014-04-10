@@ -7,9 +7,9 @@ import javax.inject.Inject;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
 import org.jboss.windup.engine.visitor.base.EmptyGraphVisitor;
-import org.jboss.windup.engine.visitor.java.JavaClassReader;
 import org.jboss.windup.graph.dao.ArchiveEntryDaoBean;
 import org.jboss.windup.graph.dao.JavaClassDaoBean;
+import org.jboss.windup.graph.dao.JavaMethodDaoBean;
 import org.jboss.windup.graph.model.resource.ArchiveEntryResource;
 import org.jboss.windup.graph.model.resource.ArchiveResource;
 import org.slf4j.Logger;
@@ -30,6 +30,8 @@ public class JavaClassVisitor extends EmptyGraphVisitor {
 	@Inject
 	private ArchiveEntryDaoBean archiveEntryDao;
 	
+	@Inject
+	private JavaMethodDaoBean javaMethodDao;
 	
 	@Override
 	public void run() {
@@ -37,7 +39,7 @@ public class JavaClassVisitor extends EmptyGraphVisitor {
 		int i=0; 
 		for(final ArchiveEntryResource entry : archiveEntryDao.findArchiveEntryWithExtension("class")) {
 			visitArchiveEntry(entry);
-			if(i>0&&i%1000==0) {
+			if(i>0&&i%100==0) {
 				LOG.info("Processed: "+i+" of "+total+" Java Classes.");
 				archiveEntryDao.commit();
 			}
@@ -60,7 +62,7 @@ public class JavaClassVisitor extends EmptyGraphVisitor {
 		try {
 			ClassParser classParser = new ClassParser(archive.getFileResource().getFilePath(), entry.getArchiveEntry());
 			JavaClass parsed = classParser.parse();
-			JavaClassReader iv = new JavaClassReader(parsed, javaClassDao, entry);
+			JavaClassProfiler iv = new JavaClassProfiler(parsed, javaClassDao, javaMethodDao, entry);
 			iv.process();
 		} catch (IOException e) {
 			LOG.error("Exception reading class.", e);

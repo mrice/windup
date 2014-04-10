@@ -49,10 +49,10 @@ public class JarArchiveDaoBean extends BaseDaoBean<JarArchive> {
 	}
 
 	public Iterable<JarArchive> findCircularReferences(JarArchive archive) {
-		Set<JarArchive> results = new HashSet<>();
+		Set<JarArchive> results = new HashSet<JarArchive>();
 
 		//if it is both providing for and depending on, is circular.
-		Set<String> set = new HashSet<>();
+		Set<String> set = new HashSet<String>();
 		for(JarArchive d : archive.dependsOnArchives()) {
 			set.add(d.getFileResource().getFilePath());
 		}

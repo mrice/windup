@@ -26,7 +26,6 @@ public class JavaClassDaoBean extends BaseDaoBean<JavaClass> {
 
 		return clz;
 	}
-
 	
 	public Iterable<JavaClass> findByJavaPackage(String packageName) {
 		return getContext().getFramed().query().has("type", typeValue).has("packageName", packageName).vertices(type);

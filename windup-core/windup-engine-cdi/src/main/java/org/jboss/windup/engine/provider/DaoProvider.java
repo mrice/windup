@@ -2,6 +2,7 @@ package org.jboss.windup.engine.provider;
 
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.jboss.windup.engine.WindupContext;
 import org.jboss.windup.graph.GraphContext;

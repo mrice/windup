@@ -8,7 +8,6 @@ import java.util.UUID;
 import javax.inject.Inject;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.windup.engine.WindupContext;
 import org.jboss.windup.engine.visitor.base.EmptyGraphVisitor;
@@ -24,7 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * For all Java Class entries in the zip, this sets up the JavaClass graph entries. 
+ * For all Java Class that are "customer packages" that need further investigation, this
+ * visitor will decompile the Java class. 
  * 
  * @author bradsdavis@gmail.com
  *
@@ -60,6 +60,8 @@ public class JavaDecompilerVisitor extends EmptyGraphVisitor {
 			packagePatterns[i] = "^"+packagePatterns[i] + ".*";
 		}
 		
+		//count the iterations so that we can commit periodically.
+		int count = 1;
 		for(org.jboss.windup.graph.model.resource.JavaClass candidate : javaClassDao.findValueMatchingRegex("qualifiedName", packagePatterns)) {
 			if(candidate.getSource() == null) {
 				Iterator<Resource> resources = candidate.getResources().iterator();
@@ -78,11 +80,26 @@ public class JavaDecompilerVisitor extends EmptyGraphVisitor {
 						}
 						
 						LOG.info("Class File: "+fileReference);
-						String fileName = UUID.randomUUID().toString()+".java";
+						String fileName = UUID.randomUUID().toString();
 						File output = new File(FileUtils.getTempDirectory(), fileName);
 						
 						LOG.info("Java Source: "+fileName);
 						decompiler.decompile(candidate.getQualifiedName(), fileReference, output);
+						
+						File outputReference = new File(output, StringUtils.substringAfterLast(candidate.getQualifiedName(), ".")+".java");
+						LOG.info("Output: "+outputReference.getAbsolutePath());
+						
+						if(!outputReference.exists()) {
+							LOG.warn("Expected: "+outputReference.getAbsolutePath()+" but the file doesn't exist.");
+						}
+						
+						FileResource fr = fileDao.create();
+						fr.setFilePath(outputReference.getAbsolutePath());
+						candidate.setSource(fr);
+						
+						if(count % 100 == 0) {
+							fileDao.commit();
+						}
 					}
 					catch(IOException e) {
 						LOG.error("Unable to get resource for qualified: "+candidate.getQualifiedName());
@@ -93,10 +110,10 @@ public class JavaDecompilerVisitor extends EmptyGraphVisitor {
 				LOG.warn("No resource associated with the Java class: "+candidate.getQualifiedName());
 				continue;
 			}
-	
-			//TODO: Add preconditions to determine if the class makes use of any Windup Rule
-			LOG.info("Must decompile: "+candidate.getQualifiedName());
+			count++;
 		}
+		
+		fileDao.commit();
 	}
 	
 }

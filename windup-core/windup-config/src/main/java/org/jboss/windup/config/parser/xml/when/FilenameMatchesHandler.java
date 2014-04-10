@@ -1,7 +1,5 @@
 package org.jboss.windup.config.parser.xml.when;
 
-import static org.joox.JOOX.$;
-
 import org.jboss.windup.config.condition.FilenameMatchesCondition;
 import org.jboss.windup.config.parser.ElementHandler;
 import org.jboss.windup.config.parser.NamespaceElementHandler;

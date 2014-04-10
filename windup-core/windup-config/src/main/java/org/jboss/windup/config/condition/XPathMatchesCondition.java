@@ -44,7 +44,7 @@ public class XPathMatchesCondition extends GraphCondition {
 			LOG.debug("Event ["+event.toString()+"] XPath ["+xpathExpression.toString()+"]");
 			XmlResource resource = (XmlResource)event.getResource();
 			try {
-				Document document = xmlDao.asDocument(resource);
+				Document document = resource.asDocument();
 				Boolean result = (Boolean)xpathExpression.evaluate(document, XPathConstants.BOOLEAN);
 				return result;
 			}

@@ -16,6 +16,7 @@ import org.jboss.windup.engine.visitor.DebugVisitor;
 import org.jboss.windup.engine.visitor.EjbConfigurationVisitor;
 import org.jboss.windup.engine.visitor.HibernateConfigurationVisitor;
 import org.jboss.windup.engine.visitor.HibernateMappingVisitor;
+import org.jboss.windup.engine.visitor.JavaASTVisitor;
 import org.jboss.windup.engine.visitor.JavaClassVisitor;
 import org.jboss.windup.engine.visitor.JavaDecompilerVisitor;
 import org.jboss.windup.engine.visitor.ManifestVisitor;
@@ -39,12 +40,11 @@ import org.jboss.windup.engine.visitor.reporter.MavenPomReporter;
 import org.jboss.windup.engine.visitor.reporter.NamespacesFoundReporter;
 import org.jboss.windup.engine.visitor.reporter.WriteGraphToDotReporter;
 import org.jboss.windup.engine.visitor.reporter.WriteGraphToGraphMLReporter;
-import org.jboss.windup.engine.visitor.reporter.html.model.ServerResourceReport;
 import org.jboss.windup.engine.visitor.reporter.html.renderer.ApplicationReportRenderer;
+import org.jboss.windup.engine.visitor.reporter.html.renderer.CssJsResourceRenderer;
 import org.jboss.windup.engine.visitor.reporter.html.renderer.EJBReportRenderer;
 import org.jboss.windup.engine.visitor.reporter.html.renderer.HibernateReportRenderer;
 import org.jboss.windup.engine.visitor.reporter.html.renderer.OverviewReportRenderer;
-import org.jboss.windup.engine.visitor.reporter.html.renderer.CssJsResourceRenderer;
 import org.jboss.windup.engine.visitor.reporter.html.renderer.ServerResourceReportRenderer;
 import org.jboss.windup.engine.visitor.reporter.html.renderer.SpringReportRenderer;
 import org.jboss.windup.graph.model.meta.EnvironmentReference;
@@ -68,6 +68,9 @@ public class ListenerChainProvider {
 	
 	@Inject
 	private JavaClassVisitor javaClassVisitor;
+	
+	@Inject
+	private JavaASTVisitor javaAstVisitor;
 	
 	@Inject
 	private JavaDecompilerVisitor javaDecompilerVisitor;
@@ -182,6 +185,8 @@ public class ListenerChainProvider {
 		
 		listenerChain.add(javaClassVisitor); //loads java class information (imports / extends) to the graph
 		listenerChain.add(javaDecompilerVisitor); //looks for classes without source, and decompiles the class.
+		listenerChain.add(javaAstVisitor); //walks the source for Java Syntax Tree
+		
 		listenerChain.add(xmlResourceVisitor); //loads xml resource information to the graph
 		
 		listenerChain.add(webConfigurationVisitor);
