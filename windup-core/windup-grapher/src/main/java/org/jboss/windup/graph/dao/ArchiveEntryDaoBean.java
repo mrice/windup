@@ -1,17 +1,11 @@
 package org.jboss.windup.graph.dao;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-
 import org.jboss.windup.graph.model.resource.ArchiveEntryResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.thinkaurelius.titan.core.attribute.Text;
 import com.thinkaurelius.titan.util.datastructures.IterablesUtil;
-import com.tinkerpop.gremlin.java.GremlinPipeline;
 
 public class ArchiveEntryDaoBean extends BaseDaoBean<ArchiveEntryResource> {
 
@@ -27,8 +21,7 @@ public class ArchiveEntryDaoBean extends BaseDaoBean<ArchiveEntryResource> {
 
 
 	public long findArchiveEntryWithExtensionCount(String ... values) {
-		GremlinPipeline pipe = new GremlinPipeline();
-		return pipe.start(findArchiveEntryWithExtension(values)).count();
+		return count(findArchiveEntryWithExtension(values));
 	}
 	
 	//builds a regular expression query in lucene to search for archives matching extensions.

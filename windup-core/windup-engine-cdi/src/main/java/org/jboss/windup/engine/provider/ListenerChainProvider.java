@@ -12,11 +12,13 @@ import org.jboss.windup.engine.visitor.ArchiveEntryIndexVisitor;
 import org.jboss.windup.engine.visitor.ArchiveHashVisitor;
 import org.jboss.windup.engine.visitor.ArchiveTypingVisitor;
 import org.jboss.windup.engine.visitor.BasicVisitor;
+import org.jboss.windup.engine.visitor.CustomerPackageVisitor;
 import org.jboss.windup.engine.visitor.DebugVisitor;
 import org.jboss.windup.engine.visitor.EjbConfigurationVisitor;
 import org.jboss.windup.engine.visitor.HibernateConfigurationVisitor;
 import org.jboss.windup.engine.visitor.HibernateMappingVisitor;
 import org.jboss.windup.engine.visitor.JavaASTVisitor;
+import org.jboss.windup.engine.visitor.BlacklistCandidateVisitor;
 import org.jboss.windup.engine.visitor.JavaClassVisitor;
 import org.jboss.windup.engine.visitor.JavaDecompilerVisitor;
 import org.jboss.windup.engine.visitor.ManifestVisitor;
@@ -74,6 +76,12 @@ public class ListenerChainProvider {
 	
 	@Inject
 	private JavaDecompilerVisitor javaDecompilerVisitor;
+	
+	@Inject
+	private CustomerPackageVisitor customerPackageVisitor;
+	
+	@Inject
+	private BlacklistCandidateVisitor blacklistClassVisitor;
 	
 	@Inject
 	private WebConfigurationVisitor webConfigurationVisitor;
@@ -184,8 +192,12 @@ public class ListenerChainProvider {
 		listenerChain.add(manifestVisitor); //extracts manifest data.
 		
 		listenerChain.add(javaClassVisitor); //loads java class information (imports / extends) to the graph
+		listenerChain.add(customerPackageVisitor);
+		
+		listenerChain.add(blacklistClassVisitor); //walks the source for Java Syntax Tree
 		listenerChain.add(javaDecompilerVisitor); //looks for classes without source, and decompiles the class.
 		listenerChain.add(javaAstVisitor); //walks the source for Java Syntax Tree
+		
 		
 		listenerChain.add(xmlResourceVisitor); //loads xml resource information to the graph
 		

@@ -27,6 +27,10 @@ public class JavaClassDaoBean extends BaseDaoBean<JavaClass> {
 		return clz;
 	}
 	
+	public Iterable<JavaClass> findByJavaClassPattern(String regex) {
+		return super.findValueMatchingRegex("qualifiedName", regex);
+	}
+	
 	public Iterable<JavaClass> findByJavaPackage(String packageName) {
 		return getContext().getFramed().query().has("type", typeValue).has("packageName", packageName).vertices(type);
 	}
@@ -75,6 +79,43 @@ public class JavaClassDaoBean extends BaseDaoBean<JavaClass> {
 				});
 		return context.getFramed().frameVertices(pipeline, JavaClass.class);
 	}
+	
+	
+	public void markAsBlacklistCandidate(JavaClass clz) {
+		clz.asVertex().setProperty("blacklistCandidate", true);
+	}
+	
+	public void markAsCustomerPackage(JavaClass clz) {
+		clz.asVertex().setProperty("customerPackage", true);
+	}
+	
+	public Iterable<JavaClass> findCandidateBlacklistClasses() {
+		//for all java classes
+		Iterable<Vertex> pipeline = new GremlinPipeline<Vertex, Vertex>(context
+				.getGraph().getVertices("type", this.typeValue))
+				.as("clz").has("blacklistCandidate").back("clz").cast(Vertex.class);
+		return context.getFramed().frameVertices(pipeline, JavaClass.class);
+	}
+	
+	public Iterable<JavaClass> findClassesLeveragingCandidateBlacklists() {
+		Iterable<Vertex> pipeline = new GremlinPipeline<Vertex, Vertex>(context
+				.getGraph().getVertices("type", this.typeValue))
+				.has("blacklistCandidate")
+				.in("extends", "imports", "implements")
+				.dedup();
+		return context.getFramed().frameVertices(pipeline, JavaClass.class);
+	}
+	
+	
+	public Iterable<JavaClass> findCustomerPackageClasses() {
+		//for all java classes
+		Iterable<Vertex> pipeline = new GremlinPipeline<Vertex, Vertex>(context
+				.getGraph().getVertices("type", this.typeValue))
+				.has("customerPackage").V();
+		return context.getFramed().frameVertices(pipeline, JavaClass.class);
+	}
+	
+	
 	
 	
 	

@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * For all Java Class that are "customer packages" that need further investigation, this
- * visitor will decompile the Java class. 
+ * visitor will decompile the Java class, 
  * 
  * @author bradsdavis@gmail.com
  *
@@ -51,18 +51,16 @@ public class JavaDecompilerVisitor extends EmptyGraphVisitor {
 	
 	@Override
 	public void run() {
-
-		String[] packagePatterns = context.getPackagesToProfile().toArray(new String[]{});
-		
-		
-		//add the ^[package name].* to the package name to create the regex for querying the Windup graph.
-		for(int i=0; i<packagePatterns.length; i++) {
-			packagePatterns[i] = "^"+packagePatterns[i] + ".*";
-		}
-		
 		//count the iterations so that we can commit periodically.
 		int count = 1;
-		for(org.jboss.windup.graph.model.resource.JavaClass candidate : javaClassDao.findValueMatchingRegex("qualifiedName", packagePatterns)) {
+		for(org.jboss.windup.graph.model.resource.JavaClass candidate : javaClassDao.findClassesLeveragingCandidateBlacklists()) {
+			LOG.info("Processing candidate: "+candidate.getQualifiedName());
+			//now, we should see if the class matches the customer package...
+			if(!candidate.isCustomerPackage()) {
+				LOG.info("Not customer package: "+candidate.getQualifiedName());
+				continue;
+			}
+			
 			if(candidate.getSource() == null) {
 				Iterator<Resource> resources = candidate.getResources().iterator();
 				if(resources.hasNext()) {

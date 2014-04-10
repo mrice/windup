@@ -65,11 +65,10 @@ public interface JavaClass extends Resource {
 	public Iterable<JarArchive> providedBy();
 
 	@Adjacency(label="source", direction=Direction.OUT)
-	public void setSource(Resource source);
+	public void setSource(FileResource source);
 	
 	@Adjacency(label="source", direction=Direction.OUT)
-	public Resource getSource();
-	
+	public FileResource getSource();
 	
 	@GremlinGroovy("it.out('javaMethod').has('methodName', methodName)")
 	public Iterable<JavaMethod> getMethod(@GremlinParam("methodName") String methodName);
@@ -79,5 +78,20 @@ public interface JavaClass extends Resource {
 
 	@Adjacency(label="javaMethod", direction=Direction.OUT)
 	public Iterable<JavaMethod> getJavaMethods();
+	
+	
+	@GremlinGroovy("it.sideEffect{x=it}.out('extends', 'imports', 'implements').dedup().filter{it!=x}")
+	public Iterable<JavaClass> dependsOnJavaClass();
 
+	@GremlinGroovy("it.sideEffect{x=it}.in('extends', 'imports', 'implements').dedup().filter{it!=x}")
+	public Iterable<JavaClass> providesForJavaClass();
+
+
+	@GremlinGroovy(value="it.has('blacklistCandidate').hasNext()", frame=false)
+	public boolean isBlacklistCandidate();
+
+	
+	@GremlinGroovy(value="it.has('customerPackage').hasNext()", frame=false)
+	public boolean isCustomerPackage();
+	
 }
