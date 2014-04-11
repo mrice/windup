@@ -14,6 +14,7 @@ package org.jboss.windup.engine.visitor.java;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,12 +54,17 @@ import org.jboss.windup.graph.dao.JavaClassDaoBean;
 import org.jboss.windup.graph.model.resource.JavaClass;
 
 /**
- * Creates blacklist output.
+ * Runs through the source code and checks "type" uses against the blacklisted class entries.
  * 
  * @author bradsdavis
  *
  */
 public class JavaASTVariableResolvingVisitor extends ASTVisitor {
+	
+	//TODO: Fix the Method and Constructor visitors to properly 
+	//handle checking the blacklist.  Because they don't pass just the class through, a blacklisted constructor (org.example.Sample(x, y, z)) will never match the blacklist candidate
+	//present in the blacklist candidate set (org.example.Sample)
+	
 	private static final Log LOG = LogFactory.getLog(JavaASTVariableResolvingVisitor.class);
 
 	private final CompilationUnit cu;
@@ -98,6 +104,27 @@ public class JavaASTVariableResolvingVisitor extends ASTVisitor {
 		
 	}
 
+
+	private void processConstructor(ConstructorType interest, int lineStart, String decoratorPrefix, SourceType sourceType) {
+		if(!blacklistCandidates.contains(interest.getQualifiedName())) {
+			return;
+		}
+		
+		ClassCandidate dr = new ClassCandidate(lineStart, interest.toString());
+		//results.add(dr);
+		LOG.debug("Candidate: "+dr);
+	}
+	
+	private void processMethod(MethodType interest, int lineStart, String decoratorPrefix, SourceType sourceType) {
+		if(!blacklistCandidates.contains(interest.getQualifiedName())) {
+			return;
+		}
+		
+		ClassCandidate dr = new ClassCandidate(lineStart, interest.toString());
+		//results.add(dr);
+		LOG.debug("Candidate: "+dr);
+	}
+	
 	private void processInterest(String interest, int lineStart, String decoratorPrefix, SourceType sourceType) {
 		int sourcePosition = lineStart;
 		String sourceString = interest;
@@ -229,29 +256,6 @@ public class JavaASTVariableResolvingVisitor extends ASTVisitor {
 		return super.visit(node);
 	}
 
-	@Override
-	public boolean visit(ClassInstanceCreation node) {
-		String nodeType = node.getType().toString();
-		if (classNameToFullyQualified.containsKey(nodeType)) {
-			nodeType = classNameToFullyQualified.get(nodeType);
-		}
-
-		List<String> resolvedParams = this.methodParameterGuesser(node.arguments());
-
-		String resolvedConstructorCall = nodeType + "(";
-		for (int i = 0, j = resolvedParams.size(); i < j; i++) {
-			resolvedConstructorCall += resolvedParams.get(i);
-
-			if (i < j - 1) {
-				resolvedConstructorCall += ", ";
-			}
-		}
-		resolvedConstructorCall = resolvedConstructorCall + ")";
-		LOG.trace("Resolved Constructor: " + resolvedConstructorCall);
-		processInterest(resolvedConstructorCall, cu.getLineNumber(node.getStartPosition()), "Constructing type", SourceType.CONSTRUCT);
-
-		return super.visit(node);
-	}
 	
 	@Override
 	public boolean visit(FieldDeclaration node) {
@@ -308,7 +312,6 @@ public class JavaASTVariableResolvingVisitor extends ASTVisitor {
 					}
 				}
 			}
-			LOG.info(clzInterfaces.getClass());
 		}
 		if(clzSuperClasses != null) {
 			if(clzSuperClasses instanceof SimpleType) {
@@ -387,19 +390,25 @@ public class JavaASTVariableResolvingVisitor extends ASTVisitor {
 		if (classNameToFullyQualified.containsKey(objRef)) {
 			objRef = classNameToFullyQualified.get(objRef);
 		}
-		String resolvedMethodCall = objRef + "." + node.getName().toString() + "(";
+		
+		MethodType methodCall = new MethodType(objRef, node.getName().toString(), resolvedParams);
+		processMethod(methodCall, cu.getLineNumber(node.getStartPosition()), "Usage of", SourceType.METHOD);
 
-		for (int i = 0, j = resolvedParams.size(); i < j; i++) {
-			resolvedMethodCall += resolvedParams.get(i);
+		return super.visit(node);
+	}
+	
 
-			if (i < j - 1) {
-				resolvedMethodCall += ", ";
-			}
+	@Override
+	public boolean visit(ClassInstanceCreation node) {
+		String nodeType = node.getType().toString();
+		if (classNameToFullyQualified.containsKey(nodeType)) {
+			nodeType = classNameToFullyQualified.get(nodeType);
 		}
-		resolvedMethodCall = resolvedMethodCall + ")";
-		LOG.trace("Resolved Method call: " + resolvedMethodCall);
-		// Here is the call to blacklist
-		processInterest(resolvedMethodCall, cu.getLineNumber(node.getStartPosition()), "Usage of", SourceType.METHOD);
+
+		List<String> resolvedParams = this.methodParameterGuesser(node.arguments());
+
+		ConstructorType resolvedConstructor = new ConstructorType(nodeType, resolvedParams);
+		processConstructor(resolvedConstructor, cu.getLineNumber(node.getStartPosition()), "Constructing type", SourceType.CONSTRUCT);
 
 		return super.visit(node);
 	}
@@ -503,4 +512,97 @@ public class JavaASTVariableResolvingVisitor extends ASTVisitor {
 
 		return objRef;
 	}
+	
+	
+	public static class MethodType {
+		private final String qualifiedName;
+		private final String methodName;
+		private final List<String> qualifiedParameters;
+		
+		public MethodType(String qualifiedName, String methodName, List<String> qualifiedParameters) {
+			this.qualifiedName = qualifiedName;
+			this.methodName = methodName;
+			
+			if(qualifiedParameters != null) {
+				this.qualifiedParameters = qualifiedParameters;
+			}
+			else {
+				this.qualifiedParameters = new LinkedList<String>();
+			}
+		}
+		
+		public String getMethodName() {
+			return methodName;
+		}
+
+		public String getQualifiedName() {
+			return qualifiedName;
+		}
+		
+		public List<String> getQualifiedParameters() {
+			return qualifiedParameters;
+		}
+		
+		@Override
+		public String toString() {
+			StringBuilder builder = new StringBuilder();
+			builder.append(qualifiedName + "." + methodName);
+			builder.append("(");
+
+			for(int i=0, j=qualifiedParameters.size(); i<j; i++) {
+				if(i > 0) {
+					builder.append(", ");
+				}
+				String param = qualifiedParameters.get(i);
+				builder.append(param);
+			}
+			builder.append(")");
+			
+			return builder.toString();
+		}
+	}
+	
+	public static class ConstructorType {
+		private final String qualifiedName;
+		private final List<String> qualifiedParameters;
+		
+		public ConstructorType(String qualifiedName, List<String> qualifiedParameters) {
+			this.qualifiedName = qualifiedName;
+			if(qualifiedParameters != null) {
+				this.qualifiedParameters = qualifiedParameters;
+			}
+			else {
+				this.qualifiedParameters = new LinkedList<String>();
+			}
+			
+		}
+
+		public String getQualifiedName() {
+			return qualifiedName;
+		}
+		
+		public List<String> getQualifiedParameters() {
+			return qualifiedParameters;
+		}
+		
+		@Override
+		public String toString() {
+			StringBuilder builder = new StringBuilder();
+			builder.append(qualifiedName);
+			builder.append("(");
+
+			for(int i=0, j=qualifiedParameters.size(); i<j; i++) {
+				if(i > 0) {
+					builder.append(", ");
+				}
+				String param = qualifiedParameters.get(i);
+				builder.append(param);
+			}
+			builder.append(")");
+			
+			return builder.toString();
+		}
+	}
+	
+	
 }
