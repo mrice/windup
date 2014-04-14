@@ -46,6 +46,7 @@ import org.jboss.windup.engine.visitor.reporter.html.renderer.ApplicationReportR
 import org.jboss.windup.engine.visitor.reporter.html.renderer.CssJsResourceRenderer;
 import org.jboss.windup.engine.visitor.reporter.html.renderer.EJBReportRenderer;
 import org.jboss.windup.engine.visitor.reporter.html.renderer.HibernateReportRenderer;
+import org.jboss.windup.engine.visitor.reporter.html.renderer.JavaSourceRenderer;
 import org.jboss.windup.engine.visitor.reporter.html.renderer.OverviewReportRenderer;
 import org.jboss.windup.engine.visitor.reporter.html.renderer.ServerResourceReportRenderer;
 import org.jboss.windup.engine.visitor.reporter.html.renderer.SpringReportRenderer;
@@ -177,6 +178,9 @@ public class ListenerChainProvider {
 	
 	@Inject
 	private ServerResourceReportRenderer serverResourceRenderer;
+
+	@Inject
+	private JavaSourceRenderer javaSourceRenderer;
 	
 	
 	
@@ -232,9 +236,9 @@ public class ListenerChainProvider {
 		//listenerChain.add(mavenPomReporter);
 		//listenerChain.add(duplicateClassReporter); //reports all classes found multiple times on the classpath.
 		//listenerChain.add(classNotFoundReporter); //reports all classes not found on the classpath.
-		listenerChain.add(graphRenderReporter);
-		listenerChain.add(namespacesFoundReporter);
-		listenerChain.add(exportToDotReporter);
+		//listenerChain.add(graphRenderReporter);
+		//listenerChain.add(namespacesFoundReporter);
+		//listenerChain.add(exportToDotReporter);
 		
 		listenerChain.add(resourceRenderer);
 		listenerChain.add(overviewRenderer);
@@ -243,6 +247,7 @@ public class ListenerChainProvider {
 		listenerChain.add(hibernateRenderer);
 		listenerChain.add(springRenderer);
 		listenerChain.add(serverResourceRenderer);
+		listenerChain.add(javaSourceRenderer);
 
 		return listenerChain;
 	}

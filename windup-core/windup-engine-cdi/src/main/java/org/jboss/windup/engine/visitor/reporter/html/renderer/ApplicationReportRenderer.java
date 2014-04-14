@@ -22,7 +22,6 @@ import org.jboss.windup.graph.model.resource.ArchiveResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Vertex;
 
 import freemarker.template.Configuration;

@@ -91,6 +91,21 @@ public class JavaClassDaoBean extends BaseDaoBean<JavaClass> {
 		clz.asVertex().setProperty("customerPackage", true);
 	}
 	
+	public Iterable<JavaClass> findClassesWithSource() {
+		//iterate through all vertices
+		Iterable<Vertex> pipeline = new GremlinPipeline<Vertex, Vertex>(context
+				.getGraph().getVertices("type", typeValue))
+				
+				//check to see whether there is an edge coming in that links to the resource providing the java class model.
+				.filter(new PipeFunction<Vertex, Boolean>() {
+					public Boolean compute(Vertex argument) {
+						return argument.getEdges(Direction.OUT, "source").iterator().hasNext();
+					}
+				});
+		return context.getFramed().frameVertices(pipeline, JavaClass.class);
+	}
+	
+	
 	public Iterable<JavaClass> findCandidateBlacklistClasses() {
 		//for all java classes
 		Iterable<Vertex> pipeline = new GremlinPipeline<Vertex, Vertex>(context

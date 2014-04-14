@@ -1,16 +1,36 @@
 package org.jboss.windup.engine.visitor.reporter.html.model;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
 
 public class SourceReport {
 
+	private String sourceType;
+	private String sourceBlock;
 	private String sourceName;
 	private String sourceBody;
 	
 	private final List<SourceLineAnnotations> sourceLineAnnotations = new LinkedList<>();
 
+	
+	public String getSourceBlock() {
+		return sourceBlock;
+	}
+	
+	public void setSourceBlock(String sourceBlock) {
+		this.sourceBlock = sourceBlock;
+	}
+	
+	public String getSourceType() {
+		return sourceType;
+	}
+	
+	public void setSourceType(String sourceType) {
+		this.sourceType = sourceType;
+	}
+	
 	public String getSourceName() {
 		return sourceName;
 	}
@@ -34,27 +54,98 @@ public class SourceReport {
 	
 	public static class SourceLineAnnotations {
 
-		private int lineNumber;
-		private String annotationTitle;
-		private String annotationBody;
+		private final int lineNumber;
+		private final String title;
+		private final Collection<SourceLineAnnotationHint> hints = new LinkedList<SourceLineAnnotationHint>();
+		
+		public SourceLineAnnotations(int lineNumber, String title) {
+			this.lineNumber = lineNumber;
+			this.title = title;
+		}
 		
 		public int getLineNumber() {
 			return lineNumber;
 		}
-		public void setLineNumber(int lineNumber) {
-			this.lineNumber = lineNumber;
+		public String getTitle() {
+			return title;
 		}
-		public String getAnnotationTitle() {
-			return annotationTitle;
+		public Collection<SourceLineAnnotationHint> getHints() {
+			return hints;
 		}
-		public void setAnnotationTitle(String annotationTitle) {
-			this.annotationTitle = annotationTitle;
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((hints == null) ? 0 : hints.hashCode());
+			result = prime * result + lineNumber;
+			result = prime * result + ((title == null) ? 0 : title.hashCode());
+			return result;
 		}
-		public String getAnnotationBody() {
-			return annotationBody;
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			SourceLineAnnotations other = (SourceLineAnnotations) obj;
+			if (hints == null) {
+				if (other.hints != null)
+					return false;
+			} else if (!hints.equals(other.hints))
+				return false;
+			if (lineNumber != other.lineNumber)
+				return false;
+			if (title == null) {
+				if (other.title != null)
+					return false;
+			} else if (!title.equals(other.title))
+				return false;
+			return true;
 		}
-		public void setAnnotationBody(String annotationBody) {
-			this.annotationBody = annotationBody;
+		
+		
+	}
+	
+	public static class SourceLineAnnotationHint {
+		
+		private final String description;
+		
+		public SourceLineAnnotationHint(String description) {
+			this.description = description;
+		}
+		
+		public String getDescription() {
+			return description;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result
+					+ ((description == null) ? 0 : description.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			SourceLineAnnotationHint other = (SourceLineAnnotationHint) obj;
+			if (description == null) {
+				if (other.description != null)
+					return false;
+			} else if (!description.equals(other.description))
+				return false;
+			return true;
 		}
 		
 		

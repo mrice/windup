@@ -98,10 +98,6 @@ public class JavaASTVariableResolvingVisitor extends ASTVisitor {
 		this.names.add("this");
 		this.nameInstance.put("this", javaClass.getQualifiedName());
 		this.classNameToFullyQualified.put(StringUtils.substringAfterLast(javaClass.getQualifiedName(), "."), javaClass.getQualifiedName());
-		
-		
-		
-		
 	}
 
 

@@ -50,7 +50,7 @@ public class SpringReportRenderer extends EmptyGraphVisitor {
 			
 			File runDirectory = context.getRunDirectory();
 			File archiveReportDirectory = new File(runDirectory, "applications");
-			File archiveDirectory = new File(archiveReportDirectory, "x");
+			File archiveDirectory = new File(archiveReportDirectory, "application");
 			FileUtils.forceMkdir(archiveDirectory);
 			File archiveReport = new File(archiveDirectory, "spring.html");
 			
