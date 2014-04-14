@@ -13,6 +13,7 @@ import org.jboss.windup.engine.WindupContext;
 import org.jboss.windup.engine.visitor.base.EmptyGraphVisitor;
 import org.jboss.windup.engine.visitor.reporter.html.model.ReportContext;
 import org.jboss.windup.engine.visitor.reporter.html.model.SourceReport;
+import org.jboss.windup.engine.visitor.reporter.html.model.SourceReport.SourceLineAnnotationHint;
 import org.jboss.windup.engine.visitor.reporter.html.model.SourceReport.SourceLineAnnotations;
 import org.jboss.windup.graph.dao.ArchiveDaoBean;
 import org.jboss.windup.graph.dao.JavaClassDaoBean;
@@ -70,7 +71,9 @@ public class JavaSourceRenderer extends EmptyGraphVisitor {
 			File file = entry.getSource().asFile();
 			report.setSourceBody(FileUtils.readFileToString(file));
 			
-			report.getSourceLineAnnotations().add(new SourceLineAnnotations(1, "Testing"));
+			SourceLineAnnotations annotation = new SourceLineAnnotations(1, "Testing", "info");
+			annotation.getHints().add(new SourceLineAnnotationHint("Example"));
+			report.getSourceLineAnnotations().add(annotation);
 			
 			//create block settings.
 			report.setSourceType("java");

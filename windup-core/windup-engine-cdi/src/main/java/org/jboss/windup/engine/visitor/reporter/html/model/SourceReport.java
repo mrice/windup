@@ -56,11 +56,13 @@ public class SourceReport {
 
 		private final int lineNumber;
 		private final String title;
+		private final String level;
 		private final Collection<SourceLineAnnotationHint> hints = new LinkedList<SourceLineAnnotationHint>();
 		
-		public SourceLineAnnotations(int lineNumber, String title) {
+		public SourceLineAnnotations(int lineNumber, String title, String level) {
 			this.lineNumber = lineNumber;
 			this.title = title;
+			this.level = level;
 		}
 		
 		public int getLineNumber() {
@@ -71,6 +73,10 @@ public class SourceReport {
 		}
 		public Collection<SourceLineAnnotationHint> getHints() {
 			return hints;
+		}
+		
+		public String getLevel() {
+			return level;
 		}
 
 		@Override
@@ -124,6 +130,11 @@ public class SourceReport {
 		}
 		
 		public String getDescription() {
+			return description;
+		}
+		
+		@Override
+		public String toString() {
 			return description;
 		}
 

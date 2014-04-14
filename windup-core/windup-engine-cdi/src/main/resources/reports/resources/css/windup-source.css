@@ -316,7 +316,7 @@ ul.links {
 }
 
 ul.links li {
-	background-image: url("img/styles/glyphicons_217_circle_arrow_right.png");
+	background-image: url("../img/styles/glyphicons_217_circle_arrow_right.png");
 	background-repeat: no-repeat;
 	background-position: left center; 
 	padding-left: 20px;
@@ -341,23 +341,23 @@ ul.notifications li {
 	margin-bottom:2px; 
 }
 ul.notifications li.info {
-	background-image: url("img/styles/glyphicons_195_circle_info.png");
+	background-image: url("../img/styles/glyphicons_195_circle_info.png");
 }
 ul.notifications li.warning {
-	background-image: url("img/styles/glyphicons_196_circle_exclamation_mark.png");
+	background-image: url("../img/styles/glyphicons_196_circle_exclamation_mark.png");
 }
 ul.notifications li.severe {
-	background-image: url("img/styles/glyphicons_196_circle_exclamation_mark.png");
+	background-image: url("../img/styles/glyphicons_196_circle_exclamation_mark.png");
 }
 ul.notifications li.critical {
-	background-image: url("img/styles/glyphicons_196_circle_exclamation_mark.png");
+	background-image: url("../img/styles/glyphicons_196_circle_exclamation_mark.png");
 }
 
-div.inline-comment-heading h2.notification {
+div.inline-comment-heading strong.notification {
 	background-repeat: no-repeat;
 	background-position: left center; 
 	padding-left: 20px;
-	margin-left: 20px;
+	margin-left: 5px;
 	margin-top:2px;
 	margin-bottom:2px;
 }
@@ -366,17 +366,17 @@ div.inline-source-hint-group {
 	white-space: normal;
 }
 
-div.inline-comment-heading h2.info {
-	background-image: url("img/styles/glyphicons_195_circle_info.png");
+div.inline-comment-heading strong.info {
+	background-image: url("../img/styles/glyphicons_195_circle_info.png");
 }
-div.inline-comment-heading h2.warning {
-	background-image: url("img/styles/glyphicons_196_circle_exclamation_mark.png");
+div.inline-comment-heading strong.warning {
+	background-image: url("../img/styles/glyphicons_196_circle_exclamation_mark.png");
 }
-div.inline-comment-heading h2.severe {
-	background-image: url("img/styles/glyphicons_196_circle_exclamation_mark.png");
+div.inline-comment-heading strong.severe {
+	background-image: url("../img/styles/glyphicons_196_circle_exclamation_mark.png");
 }
-div.inline-comment-heading h2.critical {
-	background-image: url("img/styles/glyphicons_196_circle_exclamation_mark.png");
+div.inline-comment-heading strong.critical {
+	background-image: url("../img/styles/glyphicons_196_circle_exclamation_mark.png");
 }
 
 pre {

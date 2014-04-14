@@ -83,7 +83,7 @@
 			$("<a name='${lineAnnotation.hashCode()?c}'></a><#t>
 				<div class='inline-source-comment green'><#t>
 					<#if lineAnnotation.title?has_content>
-						<div class='inline-comment'><div class='inline-comment-heading'><h2 class='notification'>${lineAnnotation.title?js_string}</h2></div><#t>
+						<div class='inline-comment'><div class='inline-comment-heading'><strong class='notification ${lineAnnotation.level}'>${lineAnnotation.title?js_string}</strong></div><#t>
 							<#if lineAnnotation.hints??>
 								<#list lineAnnotation.hints as hint>
 										<div class='inline-comment-body'>${hint?j_string}</div><#t>
