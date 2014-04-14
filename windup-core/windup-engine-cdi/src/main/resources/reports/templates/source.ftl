@@ -56,7 +56,7 @@
 	
     </div> <!-- /container -->
 
-    <script src="${report.relativeFrom}/resources/js/jquery-1.10.1.min.js"></script>
+    <script src="${report.relativeFrom}/resources/js/jquery-1.7.min.js"></script>
     <script src="${report.relativeFrom}/resources/js/bootstrap.min.js"></script>
     
 	<script type='text/javascript' src='${report.relativeFrom}/resources/libraries/jquery-ui/jquery.ui.widget.js'></script>
@@ -73,28 +73,31 @@
 	
 		<#list source.sourceLineAnnotations as lineAnnotation>
 			<#assign lineNumber = lineAnnotation.lineNumber>
-			$("<div id='${lineNumber?c}-inlines' class='inline-source-hint-group'><#t><#t><#rt>
-			").appendTo('ol.snippet-num li:nth-child(${lineNumber?c})');
+			$("<div id='${lineNumber?c}-inlines' class='inline-source-hint-group'/>").appendTo('ol.snippet-num li:nth-child(${lineNumber?c})');
 		</#list>
 		
 		<#list source.sourceLineAnnotations as lineAnnotation>
 			<#assign lineNumber = lineAnnotation.lineNumber>
 			
+			<#compress>
 			$("<a name='${lineAnnotation.hashCode()?c}'></a><#t>
-				<div class='inline-source-comment green'><#rt><#rt>
-					<#if lineAnnotation.annotationTitle?has_content>
-						<div class='inline-comment'><div class='inline-comment-heading'><h2 class='notification ${lineAnnotation.level?lower_case}'>${lineAnnotation.title?js_string}</h2></div><#t><#rt>
+				<div class='inline-source-comment green'><#t>
+					<#if lineAnnotation.title?has_content>
+						<div class='inline-comment'><div class='inline-comment-heading'><h2 class='notification'>${lineAnnotation.title?js_string}</h2></div><#t>
 							<#if lineAnnotation.hints??>
 								<#list lineAnnotation.hints as hint>
-										<div class='inline-comment-body'>${hint?j_string}</div><#t><#rt>
+										<div class='inline-comment-body'>${hint?j_string}</div><#t>
 								</#list>
 							</#if>
-						</div><#t><#rt>
+						</div><#t>
 					</#if>
-				</div><#t><#rt>
-			").appendTo('#${lineNumber?c}-inlines');<#t><#rt>
+				</div><#t>
+			").appendTo('#${lineNumber?c}-inlines');<#t>
+			</#compress>
+
 		</#list>
-		
+
+
 		
 			$('code[data-code-syntax]').each(function(){
 		         var codeSyntax = ($(this).data('code-syntax'));

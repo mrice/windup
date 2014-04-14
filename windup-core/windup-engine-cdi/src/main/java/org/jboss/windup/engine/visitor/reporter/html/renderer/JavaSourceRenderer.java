@@ -4,19 +4,19 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.jboss.windup.engine.WindupContext;
 import org.jboss.windup.engine.visitor.base.EmptyGraphVisitor;
 import org.jboss.windup.engine.visitor.reporter.html.model.ReportContext;
 import org.jboss.windup.engine.visitor.reporter.html.model.SourceReport;
+import org.jboss.windup.engine.visitor.reporter.html.model.SourceReport.SourceLineAnnotations;
 import org.jboss.windup.graph.dao.ArchiveDaoBean;
 import org.jboss.windup.graph.dao.JavaClassDaoBean;
 import org.jboss.windup.graph.dao.XmlResourceDaoBean;
-import org.jboss.windup.graph.model.resource.ArchiveResource;
 import org.jboss.windup.graph.model.resource.JavaClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,8 +69,13 @@ public class JavaSourceRenderer extends EmptyGraphVisitor {
 			report.setSourceName(entry.getQualifiedName());
 			File file = entry.getSource().asFile();
 			report.setSourceBody(FileUtils.readFileToString(file));
+			
+			report.getSourceLineAnnotations().add(new SourceLineAnnotations(1, "Testing"));
+			
+			//create block settings.
 			report.setSourceType("java");
-			report.setSourceBlock("");
+			
+			report.setSourceBlock(createBlockSettings(report.getSourceLineAnnotations()));
 			objects.put("source", report);
 			
 			
@@ -94,5 +99,23 @@ public class JavaSourceRenderer extends EmptyGraphVisitor {
 		catch(Exception e) {
 			LOG.error("Exception writing Report: "+e.getMessage());
 		}
+	}
+	
+	public String createBlockSettings(Set<SourceLineAnnotations> lines) {
+		StringBuilder builder = new StringBuilder();
+		
+		boolean first = true;
+		for(SourceLineAnnotations line : lines) {
+			if(!first) {
+				builder.append(",");
+			}
+			builder.append(line.getLineNumber());
+			
+			if(first) {
+				first = false;
+			}
+		}
+		
+		return builder.toString();
 	}
 }

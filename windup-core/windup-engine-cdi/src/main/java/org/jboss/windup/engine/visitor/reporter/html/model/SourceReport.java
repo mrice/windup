@@ -2,7 +2,8 @@ package org.jboss.windup.engine.visitor.reporter.html.model;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 
 public class SourceReport {
@@ -12,8 +13,7 @@ public class SourceReport {
 	private String sourceName;
 	private String sourceBody;
 	
-	private final List<SourceLineAnnotations> sourceLineAnnotations = new LinkedList<>();
-
+	private final Set<SourceLineAnnotations> sourceLineAnnotations = new TreeSet<SourceLineAnnotations>();
 	
 	public String getSourceBlock() {
 		return sourceBlock;
@@ -47,12 +47,12 @@ public class SourceReport {
 		this.sourceBody = sourceBody;
 	}
 
-	public List<SourceLineAnnotations> getSourceLineAnnotations() {
+	public Set<SourceLineAnnotations> getSourceLineAnnotations() {
 		return sourceLineAnnotations;
 	}
 	
 	
-	public static class SourceLineAnnotations {
+	public static class SourceLineAnnotations implements Comparable<SourceLineAnnotations> {
 
 		private final int lineNumber;
 		private final String title;
@@ -105,6 +105,11 @@ public class SourceReport {
 			} else if (!title.equals(other.title))
 				return false;
 			return true;
+		}
+
+		@Override
+		public int compareTo(SourceLineAnnotations o) {
+			return Integer.compare(this.lineNumber, o.lineNumber);
 		}
 		
 		
