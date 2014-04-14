@@ -10,6 +10,6 @@ import com.tinkerpop.frames.modules.typedgraph.TypeValue;
 @TypeValue("Meta")
 public interface Meta extends VertexFrame {
 
-	@GremlinGroovy("it.out('meta')")
+	@GremlinGroovy("it.in('meta')")
 	public Vertex getMetaReference();
 }

@@ -20,13 +20,12 @@ public interface JarManifest extends Resource {
 
 	@Adjacency(label="manifestFacet", direction=Direction.IN)
 	public void setResource(Resource resource);
-	
-	@Adjacency(label="meta", direction=Direction.IN)
+
+	@Adjacency(label="archive", direction=Direction.IN)
 	public void setJarArchive(final JarArchive archive);
 
-	@Adjacency(label="meta", direction=Direction.IN)
+	@Adjacency(label="archive", direction=Direction.IN)
 	public JarArchive getJarArchive();
-
 	
 	@JavaHandler
 	public String getProperty(String property);

@@ -88,7 +88,7 @@ public class ZipArchiveGraphVisitor extends EmptyGraphVisitor {
 				
 				//mark the archive as a top level archive.
 				ApplicationReference applicationReference = applicationReferenceDao.create(null);
-				archive.addMeta(applicationReference);
+				applicationReference.setArchive(archive);
 				
 				archive.setArchiveName(reference.getName());
 				archive.setFileResource(file);
@@ -112,7 +112,7 @@ public class ZipArchiveGraphVisitor extends EmptyGraphVisitor {
 						subArchive.setFileResource(subArchiveTempFileReference);
 						
 						//add the element as a child..
-						archive.addChild(subArchive);
+						archive.addChildArchive(subArchive);
 					}
 				}
 			} catch (Exception e) {

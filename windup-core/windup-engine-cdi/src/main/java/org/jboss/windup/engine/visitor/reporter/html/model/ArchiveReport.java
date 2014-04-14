@@ -6,7 +6,7 @@ import java.util.List;
 public class ArchiveReport {
 
 	private String applicationPath;
-	private Level level;
+	private Level level = Level.PRIMARY;
 	
 	private final List<ResourceReportRow> resources = new LinkedList<>();
 

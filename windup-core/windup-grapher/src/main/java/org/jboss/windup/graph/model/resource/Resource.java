@@ -3,7 +3,6 @@ package org.jboss.windup.graph.model.resource;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
 
 import org.jboss.windup.graph.model.meta.Meta;
 
@@ -19,7 +18,7 @@ import com.tinkerpop.frames.modules.typedgraph.TypeValue;
 public interface Resource extends VertexFrame {
 
 	@Adjacency(label="meta", direction=Direction.OUT)
-	public Iterator<Meta> getMeta();
+	public Iterable<Meta> getMeta();
 	
 	@Adjacency(label="meta", direction=Direction.OUT)
 	public void addMeta(final Meta resource);

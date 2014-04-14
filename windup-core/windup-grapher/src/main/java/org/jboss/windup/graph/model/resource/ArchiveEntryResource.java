@@ -27,10 +27,10 @@ public interface ArchiveEntryResource extends Resource {
 	@Property("archiveEntry")
 	public void setArchiveEntry(String archiveEntry);
 	
-	@Adjacency(label="child", direction=Direction.IN)
+	@Adjacency(label="childArchiveEntry", direction=Direction.IN)
 	public ArchiveResource getArchive();
 	
-	@Adjacency(label="child", direction=Direction.IN)
+	@Adjacency(label="childArchiveEntry", direction=Direction.IN)
 	public void setArchive(ArchiveResource archive);
 
 	@JavaHandler

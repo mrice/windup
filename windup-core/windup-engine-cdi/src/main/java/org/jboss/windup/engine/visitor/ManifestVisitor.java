@@ -1,21 +1,19 @@
 package org.jboss.windup.engine.visitor;
 
-import java.io.IOException;
-import java.util.jar.JarFile;
+import java.io.InputStream;
 import java.util.jar.Manifest;
 
 import javax.inject.Inject;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.jboss.windup.engine.WindupContext;
 import org.jboss.windup.engine.visitor.base.EmptyGraphVisitor;
-import org.jboss.windup.graph.dao.EarArchiveDaoBean;
-import org.jboss.windup.graph.dao.JarArchiveDaoBean;
+import org.jboss.windup.graph.dao.ArchiveEntryDaoBean;
 import org.jboss.windup.graph.dao.JarManifestDaoBean;
-import org.jboss.windup.graph.dao.WarArchiveDaoBean;
 import org.jboss.windup.graph.model.meta.JarManifest;
-import org.jboss.windup.graph.model.resource.EarArchive;
+import org.jboss.windup.graph.model.resource.ArchiveEntryResource;
 import org.jboss.windup.graph.model.resource.JarArchive;
-import org.jboss.windup.graph.model.resource.WarArchive;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,57 +27,50 @@ public class ManifestVisitor extends EmptyGraphVisitor {
 	private static final Logger LOG = LoggerFactory.getLogger(ManifestVisitor.class);
 
 	@Inject
-	private WarArchiveDaoBean warDao;
+	private WindupContext context;
 	
 	@Inject
-	private JarArchiveDaoBean jarDao;
+	private ArchiveEntryDaoBean archiveEntryDao;
 	
 	@Inject
-	private EarArchiveDaoBean earDao;
-	
-	@Inject
-	private JarManifestDaoBean manifestDao;
+	private JarManifestDaoBean jarManifestDao;
 	
 	@Override
 	public void run() {
-		for(JarArchive archive : jarDao.getAll()) {
-			visitJarArchive(archive);
+		for(ArchiveEntryResource resource : archiveEntryDao.findArchiveEntry("META-INF/MANIFEST.MF")) {
+			visitArchiveEntry(resource);
 		}
-		
-		for(WarArchive archive : warDao.getAll()) {
-			visitJarArchive(archive);
-		}
-		
-		for(EarArchive archive : earDao.getAll()) {
-			visitJarArchive(archive);
-		}
-		
-		manifestDao.commit();
+		archiveEntryDao.commit();
 	}
 	
 	@Override
-	public void visitJarArchive(JarArchive entry) {
+	public void visitArchiveEntry(ArchiveEntryResource entry) {
+		JarManifest jarManifest = jarManifestDao.create();
+		JarArchive archive = context.getGraphContext().getFramed().frame(entry.getArchive().asVertex(), JarArchive.class);
+		jarManifest.setResource(entry);
+		jarManifest.setJarArchive(archive);
+		
+		InputStream is = null; 
 		try {
-			JarFile file = jarDao.asJarFile(entry);
-			Manifest fileManifest = file.getManifest();
-			if(fileManifest == null || fileManifest.getMainAttributes().size() == 0) {
+			is = entry.asInputStream();
+			Manifest manifest = new Manifest(entry.asInputStream());
+			if(manifest == null || manifest.getMainAttributes().size() == 0) {
 				return;
 			}
 			
-			JarManifest manifest = manifestDao.create();
-			manifest.setJarArchive(entry);
-			//TODO: reference back to the JAR entry... manifest.
-			
-			for(Object key : fileManifest.getMainAttributes().keySet()) {
+			for(Object key : manifest.getMainAttributes().keySet()) {
 				String property = StringUtils.trim(key.toString());
-				String propertyValue = StringUtils.trim(fileManifest.getMainAttributes().get(key).toString());
-				manifest.setProperty(property, propertyValue);
+				String propertyValue = StringUtils.trim(manifest.getMainAttributes().get(key).toString());
+				jarManifest.setProperty(property, propertyValue);
 			}
-			
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to open JAR.", e);
+		}
+		catch(Exception e) {
+			LOG.warn("Exception reading manifest.", e);
+		}
+		finally {
+			IOUtils.closeQuietly(is);
 		}
 		
+		
 	}
-	
 }

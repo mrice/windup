@@ -12,13 +12,12 @@ import org.jboss.windup.engine.visitor.ArchiveEntryIndexVisitor;
 import org.jboss.windup.engine.visitor.ArchiveHashVisitor;
 import org.jboss.windup.engine.visitor.ArchiveTypingVisitor;
 import org.jboss.windup.engine.visitor.BasicVisitor;
+import org.jboss.windup.engine.visitor.BlacklistCandidateVisitor;
 import org.jboss.windup.engine.visitor.CustomerPackageVisitor;
-import org.jboss.windup.engine.visitor.DebugVisitor;
 import org.jboss.windup.engine.visitor.EjbConfigurationVisitor;
 import org.jboss.windup.engine.visitor.HibernateConfigurationVisitor;
 import org.jboss.windup.engine.visitor.HibernateMappingVisitor;
 import org.jboss.windup.engine.visitor.JavaASTVisitor;
-import org.jboss.windup.engine.visitor.BlacklistCandidateVisitor;
 import org.jboss.windup.engine.visitor.JavaClassVisitor;
 import org.jboss.windup.engine.visitor.JavaDecompilerVisitor;
 import org.jboss.windup.engine.visitor.ManifestVisitor;
@@ -50,7 +49,6 @@ import org.jboss.windup.engine.visitor.reporter.html.renderer.JavaSourceRenderer
 import org.jboss.windup.engine.visitor.reporter.html.renderer.OverviewReportRenderer;
 import org.jboss.windup.engine.visitor.reporter.html.renderer.ServerResourceReportRenderer;
 import org.jboss.windup.engine.visitor.reporter.html.renderer.SpringReportRenderer;
-import org.jboss.windup.graph.model.meta.EnvironmentReference;
 
 public class ListenerChainProvider {
 
@@ -223,7 +221,7 @@ public class ListenerChainProvider {
 	//	listenerChain.add(new DebugVisitor(context, NamespaceMeta.class)); //extract Maven information to facet.
 	//	listenerChain.add(new DebugVisitor(context, DoctypeMeta.class)); //extract Maven information to facet.
 		
-		listenerChain.add(new DebugVisitor(context, EnvironmentReference.class)); //extract Maven information to facet.
+	//	listenerChain.add(new DebugVisitor(context, EnvironmentReference.class)); //extract Maven information to facet.
 		
 		
 		

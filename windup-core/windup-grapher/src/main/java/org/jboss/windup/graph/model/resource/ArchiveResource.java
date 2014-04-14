@@ -10,7 +10,6 @@ import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.frames.Adjacency;
 import com.tinkerpop.frames.Property;
 import com.tinkerpop.frames.modules.javahandler.JavaHandler;
-import com.tinkerpop.frames.modules.javahandler.JavaHandlerClass;
 import com.tinkerpop.frames.modules.javahandler.JavaHandlerContext;
 import com.tinkerpop.frames.modules.typedgraph.TypeValue;
 
@@ -41,17 +40,23 @@ public interface ArchiveResource extends Resource {
 	@Property("archiveName")
 	public void setArchiveName(String archiveName);
 	
-	@Adjacency(label="child", direction=Direction.OUT)
-	public Iterable<ArchiveResource> getChildren();
+	@Adjacency(label="childArchive", direction=Direction.OUT)
+	public Iterable<ArchiveResource> getChildrenArchive();
 	
-	@Adjacency(label="child", direction=Direction.OUT)
-	public void addChild(final ArchiveResource resource);
+	@Adjacency(label="childArchive", direction=Direction.OUT)
+	public void addChildArchive(final ArchiveResource resource);
 	
-	@Adjacency(label="child", direction=Direction.IN)
-	public ArchiveResource getParent();
+	@Adjacency(label="childArchive", direction=Direction.IN)
+	public ArchiveResource getParentArchive();
 	
-	@Adjacency(label="child", direction=Direction.IN)
-	public void setChild(final ArchiveResource resource);
+	
+	@Adjacency(label="childArchiveEntry", direction=Direction.OUT)
+	public Iterable<ArchiveEntryResource> getChildrenArchiveEntries();
+	
+	@Adjacency(label="childArchiveEntry", direction=Direction.OUT)
+	public void addChildrenArchiveEntries(final ArchiveEntryResource resource);
+
+	
 	
 	@JavaHandler
 	public File asFile() throws IOException;

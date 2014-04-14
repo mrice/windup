@@ -5,6 +5,7 @@ import java.io.File;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.io.FileUtils;
+import org.jboss.windup.graph.model.meta.ApplicationReference;
 import org.jboss.windup.graph.model.meta.DatasourceMeta;
 import org.jboss.windup.graph.model.meta.JBossModuleMeta;
 import org.jboss.windup.graph.model.meta.JMSMeta;
@@ -121,7 +122,8 @@ public class GraphContext {
 		FramedGraphFactory factory = new FramedGraphFactory(
 				new JavaHandlerModule(),
 			    new TypedGraphModuleBuilder()
-			    .withClass(ArchiveResource.class)
+				.withClass(ApplicationReference.class)
+				.withClass(ArchiveResource.class)
 			    .withClass(ArchiveEntryResource.class)
 			    .withClass(EarArchive.class)
 			    .withClass(org.jboss.windup.graph.model.resource.FileResource.class)

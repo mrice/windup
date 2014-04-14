@@ -1,7 +1,6 @@
 package org.jboss.windup.graph.model.resource;
 
 import com.tinkerpop.frames.annotations.gremlin.GremlinGroovy;
-import com.tinkerpop.frames.modules.javahandler.JavaHandlerClass;
 import com.tinkerpop.frames.modules.typedgraph.TypeValue;
 
 @TypeValue("EarArchiveResource")
