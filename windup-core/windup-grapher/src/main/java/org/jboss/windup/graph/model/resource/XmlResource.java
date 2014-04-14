@@ -69,7 +69,8 @@ public interface XmlResource extends Resource {
 			if(underlyingResource instanceof ArchiveEntryResource) {
 				InputStream is = null;
 				try {
-					is = underlyingResource.asInputStream();
+					ArchiveEntryResource resource = frame(underlyingResource.asVertex(), ArchiveEntryResource.class);
+					is = resource.asInputStream();
 					Document parsedDocument = LocationAwareXmlReader.readXML(is);
 					return parsedDocument;
 				}

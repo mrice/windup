@@ -14,7 +14,7 @@ public class BasicVisitor extends EmptyGraphVisitor {
 	
 	@Override
 	public void run() {
-		File r1 = new File("/Users/bradsdavis/Projects/windup/tests/custom-application-remote.war");
+		File r1 = new File("//Users/bradsdavis/Windup/Presentation/jee-example-app-1.0.0.ear");
 		org.jboss.windup.graph.model.resource.FileResource r1g = fileDao.getByFilePath(r1.getAbsolutePath());
 		///Users/bradsdavis/Windup/Presentation/jee-example-app-1.0.0.ear
 		
