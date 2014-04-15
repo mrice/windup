@@ -74,25 +74,15 @@
         <div class="panel-heading">
             <h3 class="panel-title">Message Driven Beans</h3>
         </div>
-        <div class="panel-body">
-          <div class="row">
-            <div class="col-md-6">
-              <div class="well well-sm" style="height: 300px;">Graph of MDB to Queue</div>
-            </div>
-            <div class="col-md-6">
-              <table class="table table-striped table-bordered">
-                <tr>
-                  <th>MDB Name</th><th>Class</th><th>Queue</th>
-                </tr>
-				<#list ejbs.mdbs as mdb>
-                	<@mdbRenderer mdb/>
-                </#list>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    
+			<table class="table table-striped table-bordered">
+			<tr>
+				<th>MDB Name</th><th>Class</th><th>Queue</th>
+			</tr>
+			<#list ejbs.mdbs as mdb>
+				<@mdbRenderer mdb/>
+			</#list>
+			</table>
+	</div>
 	</#if>
 	
 	<#if ejbs.statelessBeans?has_content>
@@ -100,23 +90,14 @@
         <div class="panel-heading">
             <h3 class="panel-title">Stateless Session Beans</h3>
         </div>
-        <div class="panel-body">
-          <div class="row">
-            <div class="col-md-6">
-              <div class="well well-sm" style="height: 300px;">Graph of MDB to Queue</div>
-            </div>
-            <div class="col-md-6">
-              <table class="table table-striped table-bordered">
-                <tr>
-                  <th>Bean Name</th><th>Class</th><th>Type</th>
-                </tr>
-				<#list ejbs.statelessBeans as statelessBean>
-                	<@ejbRenderer statelessBean/>
-                </#list>
-              </table>
-            </div>
-          </div>
-        </div>
+			<table class="table table-striped table-bordered">
+			<tr>
+				<th>Bean Name</th><th>Class</th><th>Type</th>
+			</tr>
+			<#list ejbs.statelessBeans as statelessBean>
+				<@ejbRenderer statelessBean/>
+			</#list>
+			</table>
     </div>
     </#if>
     
@@ -125,23 +106,14 @@
         <div class="panel-heading">
             <h3 class="panel-title">Stateful Session Beans</h3>
         </div>
-        <div class="panel-body">
-          <div class="row">
-            <div class="col-md-6">
-              <div class="well well-sm" style="height: 300px;">Graph of MDB to Queue</div>
-            </div>
-            <div class="col-md-6">
-              <table class="table table-striped table-bordered">
-                <tr>
-                  <th>Bean Name</th><th>Class</th><th>Type</th>
-                </tr>
-				<#list ejbs.statefulBeans as statefulBean>
-                	<@ejbRenderer statefulBean/>
-                </#list>
-              </table>
-            </div>
-          </div>
-        </div>
+          <table class="table table-striped table-bordered">
+            <tr>
+              <th>Bean Name</th><th>Class</th><th>Type</th>
+            </tr>
+			<#list ejbs.statefulBeans as statefulBean>
+            	<@ejbRenderer statefulBean/>
+            </#list>
+          </table>
       </div>
     </#if>
 

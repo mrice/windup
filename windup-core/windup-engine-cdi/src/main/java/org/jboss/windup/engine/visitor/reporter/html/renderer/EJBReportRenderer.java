@@ -16,17 +16,13 @@ import org.jboss.windup.engine.visitor.base.EmptyGraphVisitor;
 import org.jboss.windup.engine.visitor.reporter.html.model.EJBReport;
 import org.jboss.windup.engine.visitor.reporter.html.model.EJBReport.EJBRow;
 import org.jboss.windup.engine.visitor.reporter.html.model.EJBReport.MDBRow;
-import org.jboss.windup.engine.visitor.reporter.html.model.LinkName;
 import org.jboss.windup.engine.visitor.reporter.html.model.Name;
-import org.jboss.windup.engine.visitor.reporter.html.model.ReportContext;
-import org.jboss.windup.engine.visitor.reporter.html.model.SimpleName;
 import org.jboss.windup.graph.dao.EJBEntityDaoBean;
 import org.jboss.windup.graph.dao.EJBSessionBeanDaoBean;
 import org.jboss.windup.graph.dao.MessageDrivenDaoBean;
 import org.jboss.windup.graph.dao.SourceReportDao;
 import org.jboss.windup.graph.model.meta.javaclass.EjbSessionBeanFacet;
 import org.jboss.windup.graph.model.meta.javaclass.MessageDrivenBeanFacet;
-import org.jboss.windup.graph.model.resource.FileResource;
 import org.jboss.windup.graph.model.resource.JavaClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,22 +84,42 @@ public class EJBReportRenderer extends EmptyGraphVisitor {
 		}
 	}
 	
+	protected EJBRow getEJBRow(File runDirectory, File reportReference, String title, JavaClass clz, String type) {
+		if(clz == null) {
+			return null;
+		}
+		Name name = reportUtility.getReportJavaResource(runDirectory, reportReference, clz);
+		EJBRow ejbRow = new EJBRow(title, name, type);
+		return ejbRow;
+	}
 	
 	protected EJBReport generageReports() {
 		EJBReport applicationReport = new EJBReport();
 		
 		for(EjbSessionBeanFacet session : sessionDao.getAll()) {
-			Name name = reportUtility.getReportJavaResource(runDirectory, reportReference, session.getJavaClassFacet());
-
-			EJBRow ejbRow = new EJBRow(session.getSessionBeanName(), name, session.getSessionType());
+			EJBRow ejbRow = getEJBRow(runDirectory, reportReference, session.getSessionBeanName(), session.getJavaClassFacet(), session.getSessionType());
+			EJBRow ejbHome = getEJBRow(runDirectory, reportReference, session.getSessionBeanName(), session.getEjbHome(), "Home");
+			EJBRow ejbRemote = getEJBRow(runDirectory, reportReference, session.getSessionBeanName(), session.getEjbRemote(), "Remote");
+			EJBRow ejbLocalHome = getEJBRow(runDirectory, reportReference, session.getSessionBeanName(), session.getEjbLocalHome(), "LocalHome");
+			EJBRow ejbLocal = getEJBRow(runDirectory, reportReference, session.getSessionBeanName(), session.getEjbLocal(), "Local");
 			
 			String type = session.getSessionType();
 			
 			if(StringUtils.equals("Stateless", type)) {
 				applicationReport.getStatelessBeans().add(ejbRow);
+				
+				if(ejbHome!=null)applicationReport.getStatelessBeans().add(ejbHome);
+				if(ejbRemote!=null)applicationReport.getStatelessBeans().add(ejbRemote);
+				if(ejbLocalHome!=null)applicationReport.getStatelessBeans().add(ejbLocalHome);
+				if(ejbLocal!=null)applicationReport.getStatelessBeans().add(ejbLocal);
 			}
 			else {
 				applicationReport.getStatefulBeans().add(ejbRow);
+
+				if(ejbHome!=null)applicationReport.getStatefulBeans().add(ejbHome);
+				if(ejbRemote!=null)applicationReport.getStatefulBeans().add(ejbRemote);
+				if(ejbLocalHome!=null)applicationReport.getStatefulBeans().add(ejbLocalHome);
+				if(ejbLocal!=null)applicationReport.getStatefulBeans().add(ejbLocal);
 			}
 		}
 		
