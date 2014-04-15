@@ -22,11 +22,13 @@ import org.jboss.windup.graph.dao.ArchiveDaoBean;
 import org.jboss.windup.graph.dao.EJBConfigurationDaoBean;
 import org.jboss.windup.graph.dao.JarManifestDaoBean;
 import org.jboss.windup.graph.dao.JavaClassDaoBean;
+import org.jboss.windup.graph.dao.MavenFacetDaoBean;
 import org.jboss.windup.graph.dao.WebConfigurationDaoBean;
 import org.jboss.windup.graph.dao.XmlResourceDaoBean;
 import org.jboss.windup.graph.model.meta.ApplicationReference;
 import org.jboss.windup.graph.model.meta.JarManifest;
 import org.jboss.windup.graph.model.meta.xml.EjbConfigurationFacet;
+import org.jboss.windup.graph.model.meta.xml.MavenFacet;
 import org.jboss.windup.graph.model.meta.xml.WebConfigurationFacet;
 import org.jboss.windup.graph.model.resource.ArchiveEntryResource;
 import org.jboss.windup.graph.model.resource.ArchiveResource;
@@ -67,6 +69,9 @@ public class ApplicationReportRenderer extends EmptyGraphVisitor {
 	
 	@Inject
 	private EJBConfigurationDaoBean ejbConfigurationDao;
+	
+	@Inject
+	private MavenFacetDaoBean mavenDao;
 	
 	private Configuration cfg;
 	private File runDirectory;
@@ -175,6 +180,11 @@ public class ApplicationReportRenderer extends EmptyGraphVisitor {
 				reportRow.getTechnologyTags().add(new Tag("Web "+webConfiguration.getSpecificationVersion()+" Configuration", Level.SUCCESS));
 			}
 			
+			if(mavenDao.isMavenConfiguration(resource)) {
+				MavenFacet mavenConfiguration = mavenDao.getMavenConfigurationFromResource(resource);
+				reportRow.getTechnologyTags().add(new Tag("Maven "+mavenConfiguration.getSpecificationVersion()+" Configuration", Level.SUCCESS));
+			}
+				
 			
 			report.getResources().add(reportRow);
 			return;

@@ -17,8 +17,6 @@ public interface MavenFacet extends XmlMetaFacet {
 	@Property("mavenIdentifier")
 	public void setMavenIdentifier(String identifier);
 	
-	
-	
 	@Label
 	@Property("specificationVersion")
 	public String getSpecificationVersion();

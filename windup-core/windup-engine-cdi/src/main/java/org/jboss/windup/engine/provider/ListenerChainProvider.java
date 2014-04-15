@@ -208,7 +208,7 @@ public class ListenerChainProvider {
 		
 		
 		listenerChain.add(xmlResourceVisitor); //loads xml resource information to the graph
-		
+		listenerChain.add(mavenFacetVisitor); //extract Maven information to facet.
 		listenerChain.add(webConfigurationVisitor);
 		//listenerChain.add(archiveTransitiveReporter);
 		listenerChain.add(ejbConfigurationVisitor);
@@ -231,7 +231,7 @@ public class ListenerChainProvider {
 		
 		
 		
-		//listenerChain.add(mavenFacetVisitor); //extract Maven information to facet.
+		
 		//listenerChain.add(springConfigurationVisitor);
 		//listenerChain.add(new DebugVisitor(context, SpringConfigurationFacet.class)); //extract Maven information to facet.
 

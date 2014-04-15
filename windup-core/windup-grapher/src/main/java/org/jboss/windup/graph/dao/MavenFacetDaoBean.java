@@ -1,8 +1,14 @@
 package org.jboss.windup.graph.dao;
 
+import java.util.Iterator;
+
 import org.jboss.windup.graph.model.meta.xml.MavenFacet;
+import org.jboss.windup.graph.model.resource.XmlResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.tinkerpop.blueprints.Vertex;
+import com.tinkerpop.gremlin.java.GremlinPipeline;
 
 public class MavenFacetDaoBean extends BaseDaoBean<MavenFacet> {
 
@@ -35,5 +41,20 @@ public class MavenFacetDaoBean extends BaseDaoBean<MavenFacet> {
 	
 	protected String generateMavenKey(String groupId, String artifactId, String version) {
 		return groupId+":"+artifactId+":"+version;
+	}
+	
+
+
+	public boolean isMavenConfiguration(XmlResource resource) {
+		return (new GremlinPipeline<Vertex, Vertex>(resource.asVertex())).in("xmlFacet").as("facet").has("type", this.typeValue).back("facet").iterator().hasNext();
+	}
+	
+	public MavenFacet getMavenConfigurationFromResource(XmlResource resource) {
+		Iterator<Vertex> v = (Iterator<Vertex>) (new GremlinPipeline<Vertex, Vertex>(resource.asVertex())).in("xmlFacet").as("facet").has("type", this.typeValue).back("facet").iterator();
+		if(v.hasNext()) {
+			return context.getFramed().frame(v.next(), this.type);
+		}
+		
+		return null;
 	}
 }
