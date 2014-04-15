@@ -15,17 +15,29 @@ public class ReportContext {
 		}
 		
 		String relativeTo = base.toURI().relativize(report.toURI()).getPath();
-		String relativeFrom = report.toURI().relativize(base.toURI()).getPath();
+		int count = StringUtils.countMatches(relativeTo, "/");
+		StringBuilder relativeFromBuilder = new StringBuilder();
+		for(int i=0; i<count; i++) {
+			if(i>0) {
+				relativeFromBuilder.append("/");
+			}
+			relativeFromBuilder.append("..");
+		}
+		//always add a trailing slash
+		if(count > 0) {
+			relativeFromBuilder.append("/");
+		}
+		
 		
 		if(StringUtils.equals(relativeTo, "/")) {
 			relativeTo = "";
 		}
-		if(StringUtils.equals(relativeFrom, "/")) {
-			relativeFrom = "";
-		}
+		
+		
+			
 		
 		this.relativeTo = relativeTo;
-		this.relativeFrom = relativeFrom;
+		this.relativeFrom = relativeFromBuilder.toString();
 	}
 	
 	public String getRelativeFrom() {

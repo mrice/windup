@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import javax.swing.text.html.HTMLDocument.RunElement;
+
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.frames.Adjacency;
@@ -30,37 +32,47 @@ public interface ArchiveEntryResource extends Resource {
 	public void setArchive(ArchiveResource archive);
 
 	@JavaHandler
-	public InputStream asInputStream() throws IOException;
+	public InputStream asInputStream() throws RuntimeException;
 	
 	@JavaHandler
-	public File asFile() throws IOException;
+	public File asFile() throws RuntimeException;
 	
 	@JavaHandler
-	public ZipEntry asZipEntry() throws IOException;
+	public ZipEntry asZipEntry() throws RuntimeException;
 	
 	abstract class Impl implements ArchiveEntryResource, JavaHandlerContext<Vertex> {
 		@Override
-		public InputStream asInputStream() throws IOException {
-			ZipFile file = getArchive().asZipFile();
-			ZipEntry entry = file.getEntry(this.getArchiveEntry());
-			return file.getInputStream(entry);
-		}
-		
-		@Override
-		public File asFile() throws IOException {
-			if(this.it().getProperty("tempFile") != null) {
-				File filePath = new File(this.it().getProperty("tempFile").toString());
-				return filePath;
+		public InputStream asInputStream() throws RuntimeException {
+			try {
+				ZipFile file = getArchive().asZipFile();
+				ZipEntry entry = file.getEntry(this.getArchiveEntry());
+				return file.getInputStream(entry);
 			}
-			else {
-				File temp = org.jboss.windup.engine.util.ZipUtil.unzipToTemp(this.getArchive().asZipFile(), this.asZipEntry());
-				this.it().setProperty("tempFile", temp.getAbsolutePath());
-				return temp;
+			catch(Exception e) {
+				throw new RuntimeException("Exception reading resource.", e);
 			}
 		}
 		
 		@Override
-		public ZipEntry asZipEntry() throws IOException {
+		public File asFile() throws RuntimeException {
+			try {
+				if(this.it().getProperty("tempFile") != null) {
+					File filePath = new File(this.it().getProperty("tempFile").toString());
+					return filePath;
+				}
+				else {
+					File temp = org.jboss.windup.engine.util.ZipUtil.unzipToTemp(this.getArchive().asZipFile(), this.asZipEntry());
+					this.it().setProperty("tempFile", temp.getAbsolutePath());
+					return temp;
+				}
+			}
+			catch(Exception e) {
+				throw new RuntimeException("Exception reading resource.", e);
+			}
+		}
+		
+		@Override
+		public ZipEntry asZipEntry() throws RuntimeException {
 			ZipEntry ze = new ZipEntry(this.getArchiveEntry());
 			return ze;
 		}

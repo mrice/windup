@@ -64,43 +64,38 @@ public class JavaDecompilerVisitor extends EmptyGraphVisitor {
 			if(candidate.getSource() == null) {
 				Iterator<Resource> resources = candidate.getResources().iterator();
 				if(resources.hasNext()) {
-					try {
-						File fileReference = null;
-						//check its type...
-						Resource resource = resources.next();
-						if(resource instanceof ArchiveEntryResource) {
-							ArchiveEntryResource ae = archiveEntryDao.castToType(resource.asVertex());
-							fileReference = ae.asFile();
-						}
-						else if(resource instanceof FileResource) {
-							FileResource fr = fileDao.castToType(resource.asVertex());
-							fileReference = fr.asFile();
-						}
-						
-						LOG.info("Class File: "+fileReference);
-						String fileName = UUID.randomUUID().toString();
-						File output = new File(FileUtils.getTempDirectory(), fileName);
-						
-						LOG.info("Java Source: "+fileName);
-						decompiler.decompile(candidate.getQualifiedName(), fileReference, output);
-						
-						File outputReference = new File(output, StringUtils.substringAfterLast(candidate.getQualifiedName(), ".")+".java");
-						LOG.info("Output: "+outputReference.getAbsolutePath());
-						
-						if(!outputReference.exists()) {
-							LOG.warn("Expected: "+outputReference.getAbsolutePath()+" but the file doesn't exist.");
-						}
-						
-						FileResource fr = fileDao.create();
-						fr.setFilePath(outputReference.getAbsolutePath());
-						candidate.setSource(fr);
-						
-						if(count % 100 == 0) {
-							fileDao.commit();
-						}
+					File fileReference = null;
+					//check its type...
+					Resource resource = resources.next();
+					if(resource instanceof ArchiveEntryResource) {
+						ArchiveEntryResource ae = archiveEntryDao.castToType(resource.asVertex());
+						fileReference = ae.asFile();
 					}
-					catch(IOException e) {
-						LOG.error("Unable to get resource for qualified: "+candidate.getQualifiedName());
+					else if(resource instanceof FileResource) {
+						FileResource fr = fileDao.castToType(resource.asVertex());
+						fileReference = fr.asFile();
+					}
+					
+					LOG.info("Class File: "+fileReference);
+					String fileName = UUID.randomUUID().toString();
+					File output = new File(FileUtils.getTempDirectory(), fileName);
+					
+					LOG.info("Java Source: "+fileName);
+					decompiler.decompile(candidate.getQualifiedName(), fileReference, output);
+					
+					File outputReference = new File(output, StringUtils.substringAfterLast(candidate.getQualifiedName(), ".")+".java");
+					LOG.info("Output: "+outputReference.getAbsolutePath());
+					
+					if(!outputReference.exists()) {
+						LOG.warn("Expected: "+outputReference.getAbsolutePath()+" but the file doesn't exist.");
+					}
+					
+					FileResource fr = fileDao.create();
+					fr.setFilePath(outputReference.getAbsolutePath());
+					candidate.setSource(fr);
+					
+					if(count % 100 == 0) {
+						fileDao.commit();
 					}
 				}
 			}

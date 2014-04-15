@@ -23,7 +23,7 @@ public interface Resource extends VertexFrame {
 	@Adjacency(label="meta", direction=Direction.OUT)
 	public void addMeta(final Meta resource);
 
-	public InputStream asInputStream() throws IOException;
+	public InputStream asInputStream() throws RuntimeException;
 	
-	public File asFile() throws IOException;
+	public File asFile() throws RuntimeException;
 }

@@ -27,7 +27,7 @@ public class BlacklistCandidateVisitor extends EmptyGraphVisitor {
 	@Override
 	public void run() {
 		Collection<Pattern> patterns = new LinkedList<Pattern>();
-		patterns.add(Pattern.compile(".*Stateless.*"));
+		patterns.add(Pattern.compile(".*ejb.*"));
 		
 		//for all rules....
 		

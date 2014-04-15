@@ -2,8 +2,10 @@ package org.jboss.windup.engine.visitor.reporter.html.renderer;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.io.FileUtils;
@@ -52,30 +54,32 @@ public class ApplicationReportRenderer extends EmptyGraphVisitor {
 	@Inject
 	private NamingUtility namingUtility;
 	
-	private final Configuration cfg;
+	private Configuration cfg;
+	private File runDirectory;
+	private File reportReference;
 	
-	public ApplicationReportRenderer() {
+	@PostConstruct
+	private void postConstruct() throws IOException {
 		cfg = new Configuration();
         cfg.setTemplateUpdateDelay(500);
         cfg.setClassForTemplateLoading(this.getClass(), "/");
+        
+		runDirectory = context.getRunDirectory();
+		File archiveReportDirectory = new File(runDirectory, "applications");
+		File archiveDirectory = new File(archiveReportDirectory, "application");
+		FileUtils.forceMkdir(archiveDirectory);
+		reportReference = new File(archiveDirectory, "index.html");
 	}
 	
 	
 	@Override
 	public void run() {
 		try {
-			File runDirectory = context.getRunDirectory();
-			File archiveReportDirectory = new File(runDirectory, "applications");
-			File archiveDirectory = new File(archiveReportDirectory, "application");
-			FileUtils.forceMkdir(archiveDirectory);
-			File archiveReport = new File(archiveDirectory, "index.html");
-		
-		
 			ApplicationReport applicationReport = new ApplicationReport();
 			for(ApplicationReference app : appRefDao.getAll()) {
 				ArchiveResource reference = app.getArchive();
 				applicationReport.setApplicationName(reference.getArchiveName());
-				recurseArchive(archiveReport, applicationReport, app.getArchive());
+				recurseArchive(applicationReport, app.getArchive());
 			}
 			
 			
@@ -86,32 +90,31 @@ public class ApplicationReportRenderer extends EmptyGraphVisitor {
 			java.util.Map<String, Object> objects = new HashMap<String, Object>();
 			objects.put("application", applicationReport);
 			
-			template.process(objects, new FileWriter(archiveReport));
-			
-			LOG.info("Wrote report: "+archiveReport.getAbsolutePath());
+			template.process(objects, new FileWriter(reportReference));
+			LOG.info("Wrote report: "+reportReference.getAbsolutePath());
 			
 		} catch (Exception e) {
 			throw new RuntimeException("Exception writing report.", e);
 		}
 	}
 	
-	protected void recurseArchive(File reportPath, ApplicationReport report, ArchiveResource resource) {
+	protected void recurseArchive(ApplicationReport report, ArchiveResource resource) {
 		ArchiveReport archiveReport = new ArchiveReport();
 		archiveReport.setApplicationPath(resource.getArchiveName());
 		
 		for(ArchiveEntryResource entry : resource.getChildrenArchiveEntries()) {
 			//check to see about facets.
-			processEntry(archiveReport, reportPath, entry);
+			processEntry(archiveReport, entry);
 		}
 		
 		for(ArchiveResource childResource : resource.getChildrenArchive()) {
-			recurseArchive(reportPath, report, childResource);
+			recurseArchive(report, childResource);
 		}
 		
 		report.getArchives().add(archiveReport);
 	}
 	
-	protected void processEntry(ArchiveReport report, File reportPath, ArchiveEntryResource entry) {
+	protected void processEntry(ArchiveReport report, ArchiveEntryResource entry) {
 		ResourceReportRow reportRow = new ResourceReportRow();
 		
 		//see if the resource is a java class...
@@ -120,7 +123,7 @@ public class ApplicationReportRenderer extends EmptyGraphVisitor {
 			if(!clz.isCustomerPackage()) {
 				return;
 			}
-			reportRow.setResourceName(namingUtility.getReportJavaResource(reportPath, clz));
+			reportRow.setResourceName(namingUtility.getReportJavaResource(runDirectory, reportReference, clz));
 			reportRow.getTechnologyTags().add(new Tag("Java", Level.SUCCESS));
 			
 			report.getResources().add(reportRow);
@@ -131,7 +134,7 @@ public class ApplicationReportRenderer extends EmptyGraphVisitor {
 		if(xmlDao.isXmlResource(entry)) 
 		{
 			XmlResource resource = xmlDao.getXmlFromResource(entry);
-			reportRow.setResourceName(namingUtility.getReportXmlResource(reportPath, resource));
+			reportRow.setResourceName(namingUtility.getReportXmlResource(runDirectory, reportReference, resource));
 			reportRow.getTechnologyTags().add(new Tag("XML", Level.SUCCESS));
 					
 			report.getResources().add(reportRow);
@@ -142,7 +145,7 @@ public class ApplicationReportRenderer extends EmptyGraphVisitor {
 		if(manifestDao.isManifestResource(entry))
 		{
 			JarManifest resource = manifestDao.getManifestFromResource(entry);
-			reportRow.setResourceName(namingUtility.getReportManifestResource(reportPath, resource));
+			reportRow.setResourceName(namingUtility.getReportManifestResource(runDirectory, reportReference, resource));
 			reportRow.getTechnologyTags().add(new Tag("Manifest", Level.SUCCESS));
 					
 			report.getResources().add(reportRow);

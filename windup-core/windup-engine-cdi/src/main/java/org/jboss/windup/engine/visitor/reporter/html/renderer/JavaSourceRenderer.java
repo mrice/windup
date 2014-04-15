@@ -114,6 +114,7 @@ public class JavaSourceRenderer extends EmptyGraphVisitor {
 		org.jboss.windup.graph.model.meta.report.SourceReport sourceReport = sourceReportDao.create();
 		sourceReport.setReportFile(fileReference);
 		sourceReport.setResource(javaClass);
+		LOG.info("Added source for clz: "+javaClass.getQualifiedName());
 		
 		sourceReportDao.commit();
 	}

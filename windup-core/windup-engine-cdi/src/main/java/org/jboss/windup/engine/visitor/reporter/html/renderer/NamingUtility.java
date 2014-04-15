@@ -1,7 +1,6 @@
 package org.jboss.windup.engine.visitor.reporter.html.renderer;
 
 import java.io.File;
-import java.io.IOException;
 
 import javax.inject.Inject;
 
@@ -28,60 +27,51 @@ public class NamingUtility {
 	@Inject
 	private SourceReportDao sourceReportDao;
 	
-	protected Name getReportJavaResource(File thisReport, JavaClass clz) {
+	protected Name getReportJavaResource(File baseDirectory, File thisReport, JavaClass clz) {
 		if(!sourceReportDao.hasSourceReport(clz)) {
 			return new SimpleName(clz.getQualifiedName());
 		}
 		
 		FileResource reportLocation = sourceReportDao.getResourceReport(clz);
+
+
+		ReportContext toBase = new ReportContext(baseDirectory, thisReport);
+		ReportContext fromBase = new ReportContext(baseDirectory, reportLocation.asFile());
 		
-		try {
-			ReportContext context = new ReportContext(thisReport, reportLocation.asFile());
-			LOG.info("Relative: "+context.getRelativeFrom()+" , "+context.getRelativeTo());
-			Name linked = new LinkName(context.getRelativeFrom(), clz.getQualifiedName());
-			return linked;
-		} catch (IOException e) {
-			LOG.error("Exception reading report file.", e);
-		}
-		return null;
+		LOG.info("Relative: "+toBase.getRelativeFrom()+" , "+fromBase.getRelativeTo());
+		Name linked = new LinkName(toBase.getRelativeFrom()+fromBase.getRelativeTo(), clz.getQualifiedName());
+		return linked;
 	}
 	
-	protected Name getReportXmlResource(File thisReport, XmlResource xml) {
+	protected Name getReportXmlResource(File baseDirectory, File thisReport, XmlResource xml) {
 		if(!sourceReportDao.hasSourceReport(xml)) {
 			return new SimpleName(getXmlResourceName(xml));
 		}
 		
 		FileResource reportLocation = sourceReportDao.getResourceReport(xml);
+
+		ReportContext toBase = new ReportContext(baseDirectory, thisReport);
+		ReportContext fromBase = new ReportContext(baseDirectory, reportLocation.asFile());
 		
-		try {
-			ReportContext context = new ReportContext(thisReport, reportLocation.asFile());
-			LOG.info("Relative: "+context.getRelativeFrom()+" , "+context.getRelativeTo());
-			Name linked = new LinkName(context.getRelativeFrom(), getXmlResourceName(xml));
-			return linked;
-		} catch (IOException e) {
-			LOG.error("Exception reading report file.", e);
-		}
-		
-		return null;
+		LOG.info("Relative: "+toBase.getRelativeFrom()+" , "+fromBase.getRelativeTo());
+		Name linked = new LinkName(toBase.getRelativeFrom()+fromBase.getRelativeTo(), getXmlResourceName(xml));
+		return linked;
 	}
 	
-	protected Name getReportManifestResource(File thisReport, JarManifest manifest) {
+	protected Name getReportManifestResource(File baseDirectory, File thisReport, JarManifest manifest) {
 		if(!sourceReportDao.hasSourceReport(manifest)) {
 			return new SimpleName(getManifestResourceName(manifest));
 		}
 		
 		FileResource reportLocation = sourceReportDao.getResourceReport(manifest);
 		
-		try {
-			ReportContext context = new ReportContext(thisReport, reportLocation.asFile());
-			LOG.info("Relative: "+context.getRelativeFrom()+" , "+context.getRelativeTo());
-			Name linked = new LinkName(context.getRelativeFrom(), getManifestResourceName(manifest));
-			return linked;
-		} catch (IOException e) {
-			LOG.error("Exception reading report file.", e);
-		}
+		ReportContext toBase = new ReportContext(baseDirectory, thisReport);
+		ReportContext fromBase = new ReportContext(baseDirectory, reportLocation.asFile());
 		
-		return null;
+		
+		LOG.info("Relative: "+toBase.getRelativeFrom()+" , "+fromBase.getRelativeTo());
+		Name linked = new LinkName(toBase.getRelativeFrom()+fromBase.getRelativeTo(), getManifestResourceName(manifest));
+		return linked;
 	}
 	
 	

@@ -21,24 +21,29 @@ public interface FileResource extends Resource {
 	public void setFilePath(String filePath);
 	
 	@JavaHandler
-	public File asFile() throws IOException;
+	public File asFile() throws RuntimeException;
 	
 	@JavaHandler
-	public InputStream asInputStream() throws IOException;
+	public InputStream asInputStream() throws RuntimeException;
 
 	abstract class Impl implements FileResource, Resource, JavaHandlerContext<Vertex> {
 		
 		@Override
-		public InputStream asInputStream() throws IOException {
-			if(this.getFilePath() != null) {
-				File file = new File(getFilePath());
-				return new FileInputStream(file);
+		public InputStream asInputStream() throws RuntimeException {
+			try {
+				if(this.getFilePath() != null) {
+					File file = new File(getFilePath());
+					return new FileInputStream(file);
+				}
+				return null;
 			}
-			return null;
+			catch(Exception e) {
+				throw new RuntimeException("Exception reading resource.", e);
+			}
 		}
 		
 		@Override
-		public File asFile() throws IOException {
+		public File asFile() throws RuntimeException {
 			if(this.getFilePath() != null) {
 				File file = new File(getFilePath());
 				return file;

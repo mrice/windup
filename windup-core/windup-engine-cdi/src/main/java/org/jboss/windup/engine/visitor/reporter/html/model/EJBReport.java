@@ -22,15 +22,11 @@ public class EJBReport {
 	}
 	
 	public static class EJBRow {
-		private String name;
-		private Name qualifiedName;
-		private String ejbType;
+		private final String name;
+		private final Name qualifiedName;
+		private final String ejbType;
 		
-		public EJBRow() {
-
-		}
-		
-		public EJBRow(String name, Name qualifiedName, String jndiName) {
+		public EJBRow(String name, Name qualifiedName, String ejbType) {
 			this.name = name;
 			this.qualifiedName = qualifiedName;
 			this.ejbType = ejbType;
@@ -39,14 +35,11 @@ public class EJBReport {
 		public String getName() {
 			return name;
 		}
-		public void setName(String name) {
-			this.name = name;
-		}
 		public Name getQualifiedName() {
 			return qualifiedName;
 		}
-		public void setQualifiedName(Name qualifiedName) {
-			this.qualifiedName = qualifiedName;
+		public String getEjbType() {
+			return ejbType;
 		}
 	}
 	

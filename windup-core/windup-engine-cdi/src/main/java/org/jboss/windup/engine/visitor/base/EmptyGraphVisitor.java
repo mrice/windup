@@ -1,5 +1,6 @@
 package org.jboss.windup.engine.visitor.base;
 
+import org.jboss.windup.graph.model.meta.JarManifest;
 import org.jboss.windup.graph.model.meta.javaclass.EjbEntityFacet;
 import org.jboss.windup.graph.model.meta.javaclass.EjbSessionBeanFacet;
 import org.jboss.windup.graph.model.meta.javaclass.MessageDrivenBeanFacet;
@@ -105,6 +106,11 @@ public abstract class EmptyGraphVisitor implements GraphVisitor {
 
 	@Override
 	public void visitNamespace(NamespaceMeta entry) {
+		//nothing.
+	}
+	
+	@Override
+	public void visitManifest(JarManifest entry) {
 		//nothing.
 	}
 }

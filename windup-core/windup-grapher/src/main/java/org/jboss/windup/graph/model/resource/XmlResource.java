@@ -1,7 +1,6 @@
 package org.jboss.windup.graph.model.resource;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
@@ -49,37 +48,51 @@ public interface XmlResource extends Resource {
 	public Document asDocument();
 	
 	@JavaHandler
-	public InputStream asInputStream() throws IOException;
+	public InputStream asInputStream() throws RuntimeException;
+	
+	@JavaHandler
+	public File asFile() throws RuntimeException;
+	
 	
 	abstract class Impl implements XmlResource, JavaHandlerContext<Vertex> {
 		
 		@Override
-		public InputStream asInputStream() throws IOException {
-			Resource underlyingResource = this.getResource();
-			if(underlyingResource instanceof ArchiveEntryResource) {
-					ArchiveEntryResource resource = frame(underlyingResource.asVertex(), ArchiveEntryResource.class);
+		public InputStream asInputStream() throws RuntimeException {
+			try {
+				Resource underlyingResource = this.getResource();
+				if(underlyingResource instanceof ArchiveEntryResource) {
+						ArchiveEntryResource resource = frame(underlyingResource.asVertex(), ArchiveEntryResource.class);
+						return resource.asInputStream();
+				}
+				else if(underlyingResource instanceof FileResource) {
+					FileResource resource = frame(underlyingResource.asVertex(), FileResource.class);
 					return resource.asInputStream();
+				}
+				
+				return this.getResource().asInputStream();
 			}
-			else if(underlyingResource instanceof FileResource) {
-				FileResource resource = frame(underlyingResource.asVertex(), FileResource.class);
-				return resource.asInputStream();
+			catch(Exception e) {
+				throw new RuntimeException("Exception reading resource.", e);
 			}
-			
-			return this.getResource().asInputStream();
 		}
 		
 		@Override
-		public File asFile() throws IOException {
-			Resource underlyingResource = this.getResource();
-			if(underlyingResource instanceof ArchiveEntryResource) {
-				ArchiveEntryResource resource = frame(underlyingResource.asVertex(), ArchiveEntryResource.class);
-				return resource.asFile();
+		public File asFile() throws RuntimeException {
+			try {
+				Resource underlyingResource = this.getResource();
+				if(underlyingResource instanceof ArchiveEntryResource) {
+					ArchiveEntryResource resource = frame(underlyingResource.asVertex(), ArchiveEntryResource.class);
+					return resource.asFile();
+				}
+				else if(underlyingResource instanceof FileResource) {
+					FileResource resource = frame(underlyingResource.asVertex(), FileResource.class);
+					return resource.asFile();
+				}
+				return this.getResource().asFile();
 			}
-			else if(underlyingResource instanceof FileResource) {
-				FileResource resource = frame(underlyingResource.asVertex(), FileResource.class);
-				return resource.asFile();
+			catch(Exception e) {
+				throw new RuntimeException("Exception reading resource.", e);
 			}
-			return this.getResource().asFile();
 		}
 		
 		@Override

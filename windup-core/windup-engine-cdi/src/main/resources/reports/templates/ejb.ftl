@@ -108,7 +108,7 @@
             <div class="col-md-6">
               <table class="table table-striped table-bordered">
                 <tr>
-                  <th>Bean Name</th><th>Class</th><th>JNDI</th>
+                  <th>Bean Name</th><th>Class</th><th>Type</th>
                 </tr>
 				<#list ejbs.statelessBeans as statelessBean>
                 	<@ejbRenderer statelessBean/>

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.io.FileUtils;
@@ -54,13 +55,23 @@ public class EJBReportRenderer extends EmptyGraphVisitor {
 	@Inject
 	private NamingUtility reportUtility;
 	
-	private final Configuration cfg;
+	private Configuration cfg;
+	private File runDirectory;
+	private File reportReference;
 	
-	public EJBReportRenderer() {
+	@PostConstruct
+	private void postConstruct() throws IOException {
 		cfg = new Configuration();
         cfg.setTemplateUpdateDelay(500);
         cfg.setClassForTemplateLoading(this.getClass(), "/");
+        
+		runDirectory = context.getRunDirectory();
+		File archiveReportDirectory = new File(runDirectory, "applications");
+		File archiveDirectory = new File(archiveReportDirectory, "application");
+		FileUtils.forceMkdir(archiveDirectory);
+		reportReference = new File(archiveDirectory, "ejbs.html");
 	}
+	
 	
 	@Override
 	public void run() {
@@ -68,19 +79,9 @@ public class EJBReportRenderer extends EmptyGraphVisitor {
 			Template template = cfg.getTemplate("/reports/templates/ejb.ftl");
 			
 			Map<String, Object> objects = new HashMap<String, Object>();
-			
-			
-			File runDirectory = context.getRunDirectory();
-			File archiveReportDirectory = new File(runDirectory, "applications");
-			File archiveDirectory = new File(archiveReportDirectory, "application");
-			FileUtils.forceMkdir(archiveDirectory);
-			File ejbReport = new File(archiveDirectory, "ejbs.html");
-			objects.put("ejbs", generageReports(ejbReport));
-			
-			template.process(objects, new FileWriter(ejbReport));
-			
-			
-			LOG.info("Wrote report: "+ejbReport.getAbsolutePath());
+			objects.put("ejbs", generageReports());
+			template.process(objects, new FileWriter(reportReference));
+			LOG.info("Wrote report: "+reportReference.getAbsolutePath());
 			
 		} catch (Exception e) {
 			throw new RuntimeException("Exception writing report.", e);
@@ -88,11 +89,11 @@ public class EJBReportRenderer extends EmptyGraphVisitor {
 	}
 	
 	
-	protected EJBReport generageReports(File ejbReport) {
+	protected EJBReport generageReports() {
 		EJBReport applicationReport = new EJBReport();
 		
 		for(EjbSessionBeanFacet session : sessionDao.getAll()) {
-			Name name = reportUtility.getReportJavaResource(ejbReport, session.getJavaClassFacet());
+			Name name = reportUtility.getReportJavaResource(runDirectory, reportReference, session.getJavaClassFacet());
 
 			EJBRow ejbRow = new EJBRow(session.getSessionBeanName(), name, session.getSessionType());
 			
@@ -111,7 +112,7 @@ public class EJBReportRenderer extends EmptyGraphVisitor {
 			if(StringUtils.isBlank(name)) {
 				name = mdf.getJavaClassFacet().getQualifiedName();
 			}
-			Name qualifiedName = reportUtility.getReportJavaResource(ejbReport, mdf.getJavaClassFacet());
+			Name qualifiedName = reportUtility.getReportJavaResource(runDirectory, reportReference, mdf.getJavaClassFacet());
 			
 			MDBRow row = new MDBRow(name, qualifiedName, "");
 			applicationReport.getMdbs().add(row);

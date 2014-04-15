@@ -18,8 +18,10 @@ import org.jboss.windup.engine.visitor.reporter.html.model.ReportContext;
 import org.jboss.windup.engine.visitor.reporter.html.model.SourceReport;
 import org.jboss.windup.engine.visitor.reporter.html.model.SourceReport.SourceLineAnnotations;
 import org.jboss.windup.graph.dao.FileResourceDaoBean;
+import org.jboss.windup.graph.dao.JarManifestDaoBean;
 import org.jboss.windup.graph.dao.SourceReportDao;
 import org.jboss.windup.graph.dao.XmlResourceDaoBean;
+import org.jboss.windup.graph.model.meta.JarManifest;
 import org.jboss.windup.graph.model.resource.ArchiveEntryResource;
 import org.jboss.windup.graph.model.resource.FileResource;
 import org.jboss.windup.graph.model.resource.JavaClass;
@@ -30,11 +32,11 @@ import org.slf4j.LoggerFactory;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 
-public class XmlSourceRenderer extends EmptyGraphVisitor {
-	private static final Logger LOG = LoggerFactory.getLogger(XmlSourceRenderer.class);
+public class ManifestSourceRenderer extends EmptyGraphVisitor {
+	private static final Logger LOG = LoggerFactory.getLogger(ManifestSourceRenderer.class);
 	
 	@Inject
-	private XmlResourceDaoBean xmlResources;
+	private JarManifestDaoBean manifestResources;
 	
 	@Inject
 	private FileResourceDaoBean fileResourceDao;
@@ -47,7 +49,7 @@ public class XmlSourceRenderer extends EmptyGraphVisitor {
 	
 	private final Configuration cfg;
 	
-	public XmlSourceRenderer() {
+	public ManifestSourceRenderer() {
 		cfg = new Configuration();
         cfg.setTemplateUpdateDelay(500);
         cfg.setClassForTemplateLoading(this.getClass(), "/");
@@ -56,8 +58,8 @@ public class XmlSourceRenderer extends EmptyGraphVisitor {
 	@Override
 	public void run() {
 		try {
-			for(XmlResource entry : xmlResources.getAll()) {
-				visitXmlResource(entry);
+			for(JarManifest entry : manifestResources.getAll()) {
+				visitManifest(entry);
 			}
 		} catch (Exception e) {
 			throw new RuntimeException("Exception writing report.", e);
@@ -65,7 +67,7 @@ public class XmlSourceRenderer extends EmptyGraphVisitor {
 	}
 	
 	@Override
-	public void visitXmlResource(XmlResource entry) {
+	public void visitManifest(JarManifest entry) {
 		
 		try {
 			Template template = cfg.getTemplate("/reports/templates/source.ftl");
@@ -77,7 +79,7 @@ public class XmlSourceRenderer extends EmptyGraphVisitor {
 			report.setSourceBody(IOUtils.toString(entry.asInputStream()));
 			
 			//create block settings.
-			report.setSourceType("xml");
+			report.setSourceType("manifest");
 			
 			report.setSourceBlock(createBlockSettings(report.getSourceLineAnnotations()));
 			objects.put("source", report);
@@ -119,7 +121,7 @@ public class XmlSourceRenderer extends EmptyGraphVisitor {
 		}
 	}
 	
-	private void persistReportReference(XmlResource xmlResource, File reportLocation) {
+	private void persistReportReference(JarManifest xmlResource, File reportLocation) {
 		//persist the file resource & reference to Java Class.
 		FileResource fileReference = fileResourceDao.create();
 		fileReference.setFilePath(reportLocation.getAbsolutePath());
