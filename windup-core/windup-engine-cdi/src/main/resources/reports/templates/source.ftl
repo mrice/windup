@@ -61,6 +61,7 @@
     
 	<script type='text/javascript' src='${report.relativeFrom}/resources/libraries/jquery-ui/jquery.ui.widget.js'></script>
 	<script type='text/javascript' src='${report.relativeFrom}/resources/libraries/snippet/jquery.snippet.min.js'></script>
+	<script type='text/javascript' src='${report.relativeFrom}/resources/libraries/snippet/jquery.snippet.java-properties.js'></script>
 	<script type='text/javascript' src='${report.relativeFrom}/resources/libraries/snippet/jquery.snippet.java-manifest.js'></script>
 	<script type='text/javascript' src='${report.relativeFrom}/resources/libraries/sausage/jquery.sausage.min.js'></script>
 

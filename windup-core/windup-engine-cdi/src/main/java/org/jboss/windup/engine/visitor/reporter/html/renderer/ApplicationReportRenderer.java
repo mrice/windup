@@ -23,10 +23,12 @@ import org.jboss.windup.graph.dao.EJBConfigurationDaoBean;
 import org.jboss.windup.graph.dao.JarManifestDaoBean;
 import org.jboss.windup.graph.dao.JavaClassDaoBean;
 import org.jboss.windup.graph.dao.MavenFacetDaoBean;
+import org.jboss.windup.graph.dao.PropertiesDaoBean;
 import org.jboss.windup.graph.dao.WebConfigurationDaoBean;
 import org.jboss.windup.graph.dao.XmlResourceDaoBean;
 import org.jboss.windup.graph.model.meta.ApplicationReference;
 import org.jboss.windup.graph.model.meta.JarManifest;
+import org.jboss.windup.graph.model.meta.PropertiesMeta;
 import org.jboss.windup.graph.model.meta.xml.EjbConfigurationFacet;
 import org.jboss.windup.graph.model.meta.xml.MavenFacet;
 import org.jboss.windup.graph.model.meta.xml.WebConfigurationFacet;
@@ -72,6 +74,9 @@ public class ApplicationReportRenderer extends EmptyGraphVisitor {
 	
 	@Inject
 	private MavenFacetDaoBean mavenDao;
+	
+	@Inject
+	private PropertiesDaoBean propertiesDao;
 	
 	private Configuration cfg;
 	private File runDirectory;
@@ -185,7 +190,14 @@ public class ApplicationReportRenderer extends EmptyGraphVisitor {
 				reportRow.getTechnologyTags().add(new Tag("Maven "+mavenConfiguration.getSpecificationVersion()+" Configuration", Level.SUCCESS));
 			}
 				
-			
+			report.getResources().add(reportRow);
+			return;
+		}
+		
+		if(propertiesDao.isPropertiesResource(entry)) {
+			PropertiesMeta meta = propertiesDao.getPropertiesFromResource(entry);
+			reportRow.setResourceName(namingUtility.getReportPropertiesResource(runDirectory, reportReference, meta));
+			reportRow.getTechnologyTags().add(new Tag("Properties", Level.SUCCESS));
 			report.getResources().add(reportRow);
 			return;
 		}

@@ -6,6 +6,7 @@ import java.util.List;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
+import org.apache.commons.configuration.PropertiesConfiguration.PropertiesReader;
 import org.jboss.windup.engine.WindupContext;
 import org.jboss.windup.engine.qualifier.ListenerChainQualifier;
 import org.jboss.windup.engine.visitor.ArchiveEntryIndexVisitor;
@@ -22,6 +23,7 @@ import org.jboss.windup.engine.visitor.JavaClassVisitor;
 import org.jboss.windup.engine.visitor.JavaDecompilerVisitor;
 import org.jboss.windup.engine.visitor.ManifestVisitor;
 import org.jboss.windup.engine.visitor.MavenFacetVisitor;
+import org.jboss.windup.engine.visitor.PropertiesVisitor;
 import org.jboss.windup.engine.visitor.SpringConfigurationVisitor;
 import org.jboss.windup.engine.visitor.WebConfigurationVisitor;
 import org.jboss.windup.engine.visitor.XmlResourceVisitor;
@@ -48,6 +50,7 @@ import org.jboss.windup.engine.visitor.reporter.html.renderer.HibernateReportRen
 import org.jboss.windup.engine.visitor.reporter.html.renderer.JavaSourceRenderer;
 import org.jboss.windup.engine.visitor.reporter.html.renderer.ManifestSourceRenderer;
 import org.jboss.windup.engine.visitor.reporter.html.renderer.OverviewReportRenderer;
+import org.jboss.windup.engine.visitor.reporter.html.renderer.PropertiesSourceRenderer;
 import org.jboss.windup.engine.visitor.reporter.html.renderer.ServerResourceReportRenderer;
 import org.jboss.windup.engine.visitor.reporter.html.renderer.SpringReportRenderer;
 import org.jboss.windup.engine.visitor.reporter.html.renderer.XmlSourceRenderer;
@@ -141,6 +144,9 @@ public class ListenerChainProvider {
 	private ManifestVisitor manifestVisitor;
 	
 	@Inject
+	private PropertiesVisitor propertiesVisitor;
+	
+	@Inject
 	private JarManifestReporter manifestReporter;
 	
 	@Inject
@@ -188,6 +194,9 @@ public class ListenerChainProvider {
 	@Inject
 	private ManifestSourceRenderer manifestSourceRenderer;
 	
+	@Inject
+	private PropertiesSourceRenderer propertiesRenderer;
+	
 	@ListenerChainQualifier
 	@Produces
 	public List<GraphVisitor> produceListenerChain() {
@@ -198,7 +207,7 @@ public class ListenerChainProvider {
 		listenerChain.add(archiveHashVisitor);
 		listenerChain.add(archiveTypeVisitor);  //sets the archive to a sub-type
 		listenerChain.add(manifestVisitor); //extracts manifest data.
-		
+		listenerChain.add(propertiesVisitor); //extracts properties data.
 		listenerChain.add(javaClassVisitor); //loads java class information (imports / extends) to the graph
 		listenerChain.add(customerPackageVisitor);
 		
@@ -244,6 +253,7 @@ public class ListenerChainProvider {
 		//listenerChain.add(namespacesFoundReporter);
 		//listenerChain.add(exportToDotReporter);
 		
+		listenerChain.add(propertiesRenderer);
 		listenerChain.add(javaSourceRenderer);
 		listenerChain.add(xmlSourceRenderer);
 		listenerChain.add(manifestSourceRenderer);

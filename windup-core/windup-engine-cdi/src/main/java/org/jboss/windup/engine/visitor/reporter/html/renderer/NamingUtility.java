@@ -11,6 +11,7 @@ import org.jboss.windup.engine.visitor.reporter.html.model.ReportContext;
 import org.jboss.windup.engine.visitor.reporter.html.model.SimpleName;
 import org.jboss.windup.graph.dao.SourceReportDao;
 import org.jboss.windup.graph.model.meta.JarManifest;
+import org.jboss.windup.graph.model.meta.PropertiesMeta;
 import org.jboss.windup.graph.model.resource.ArchiveEntryResource;
 import org.jboss.windup.graph.model.resource.ArchiveResource;
 import org.jboss.windup.graph.model.resource.FileResource;
@@ -78,6 +79,22 @@ public class NamingUtility {
 		return linked;
 	}
 	
+	protected Name getReportPropertiesResource(File baseDirectory, File thisReport, PropertiesMeta properties) {
+		if(!sourceReportDao.hasSourceReport(properties)) {
+			return new SimpleName(getPropertiesResourceName(properties));
+		}
+		
+		FileResource reportLocation = sourceReportDao.getResourceReport(properties);
+		
+		ReportContext toBase = new ReportContext(baseDirectory, thisReport);
+		ReportContext fromBase = new ReportContext(baseDirectory, reportLocation.asFile());
+		
+		
+		LOG.info("Relative: "+toBase.getRelativeFrom()+" , "+fromBase.getRelativeTo());
+		Name linked = new LinkName(toBase.getRelativeFrom()+fromBase.getRelativeTo(), getPropertiesResourceName(properties));
+		return linked;
+	}
+	
 	protected Name getReportManifestResource(File baseDirectory, File thisReport, JarManifest manifest) {
 		if(!sourceReportDao.hasSourceReport(manifest)) {
 			return new SimpleName(getManifestResourceName(manifest));
@@ -94,6 +111,19 @@ public class NamingUtility {
 		return linked;
 	}
 	
+
+	protected String getPropertiesResourceName(PropertiesMeta entry) {
+		if(entry.getResource() instanceof ArchiveEntryResource) {
+			ArchiveEntryResource resource = context.getGraphContext().getFramed().frame(entry.getResource().asVertex(), ArchiveEntryResource.class);
+			return resource.getArchiveEntry();
+		}
+		else if(entry.getResource() instanceof FileResource) { 
+			FileResource resource = context.getGraphContext().getFramed().frame(entry.getResource().asVertex(), FileResource.class);
+			return resource.getFilePath();
+		}
+		LOG.info("Link is null.");
+		return null;
+	}
 	
 	protected String getManifestResourceName(JarManifest manifest) {
 		if(manifest.getResource() instanceof ArchiveEntryResource) {

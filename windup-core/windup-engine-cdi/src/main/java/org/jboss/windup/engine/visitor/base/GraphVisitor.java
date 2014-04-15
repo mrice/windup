@@ -1,6 +1,7 @@
 package org.jboss.windup.engine.visitor.base;
 
 import org.jboss.windup.graph.model.meta.JarManifest;
+import org.jboss.windup.graph.model.meta.PropertiesMeta;
 import org.jboss.windup.graph.model.meta.javaclass.EjbEntityFacet;
 import org.jboss.windup.graph.model.meta.javaclass.EjbSessionBeanFacet;
 import org.jboss.windup.graph.model.meta.javaclass.MessageDrivenBeanFacet;
@@ -43,4 +44,5 @@ public interface GraphVisitor {
 	public void visitDoctype(DoctypeMeta entry);
 	public void visitNamespace(NamespaceMeta entry);
 	public void visitManifest(JarManifest entry);
+	public void visitProperties(PropertiesMeta entry);
 }

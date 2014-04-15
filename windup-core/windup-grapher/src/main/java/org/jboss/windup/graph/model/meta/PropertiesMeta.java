@@ -6,7 +6,6 @@ import java.util.Set;
 
 import org.jboss.windup.graph.model.resource.ArchiveEntryResource;
 import org.jboss.windup.graph.model.resource.FileResource;
-import org.jboss.windup.graph.model.resource.JarArchive;
 import org.jboss.windup.graph.model.resource.Resource;
 
 import com.tinkerpop.blueprints.Direction;
@@ -16,21 +15,15 @@ import com.tinkerpop.frames.modules.javahandler.JavaHandler;
 import com.tinkerpop.frames.modules.javahandler.JavaHandlerContext;
 import com.tinkerpop.frames.modules.typedgraph.TypeValue;
 
-@TypeValue("JarManifestMeta")
-public interface JarManifest extends Resource {
+@TypeValue("PropertiesMeta")
+public interface PropertiesMeta extends Resource {
 	
-	@Adjacency(label="manifestFacet", direction=Direction.IN)
+	@Adjacency(label="propertiesFacet", direction=Direction.IN)
 	public Resource getResource();
 
-	@Adjacency(label="manifestFacet", direction=Direction.IN)
+	@Adjacency(label="propertiesFacet", direction=Direction.IN)
 	public void setResource(Resource resource);
 
-	@Adjacency(label="archive", direction=Direction.IN)
-	public void setJarArchive(final JarArchive archive);
-
-	@Adjacency(label="archive", direction=Direction.IN)
-	public JarArchive getJarArchive();
-	
 	@JavaHandler
 	public String getProperty(String property);
 	
@@ -48,7 +41,7 @@ public interface JarManifest extends Resource {
 	
 	
 	
-	abstract class Impl implements JarManifest, JavaHandlerContext<Vertex> {
+	abstract class Impl implements PropertiesMeta, JavaHandlerContext<Vertex> {
 
 		@Override
 		public InputStream asInputStream() throws RuntimeException {

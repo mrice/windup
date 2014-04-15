@@ -11,6 +11,7 @@ import org.jboss.windup.graph.model.meta.JBossModuleMeta;
 import org.jboss.windup.graph.model.meta.JMSMeta;
 import org.jboss.windup.graph.model.meta.JarManifest;
 import org.jboss.windup.graph.model.meta.MailserverMeta;
+import org.jboss.windup.graph.model.meta.PropertiesMeta;
 import org.jboss.windup.graph.model.meta.SpecificationVersionMeta;
 import org.jboss.windup.graph.model.meta.javaclass.EjbEntityFacet;
 import org.jboss.windup.graph.model.meta.javaclass.EjbSessionBeanFacet;
@@ -158,6 +159,7 @@ public class GraphContext {
 			    .withClass(JarManifest.class)
 			    .withClass(SourceReport.class)
 			    .withClass(WebConfigurationFacet.class)
+			    .withClass(PropertiesMeta.class)
 			    .build(), 
 			    new GremlinGroovyModule()
 		);
