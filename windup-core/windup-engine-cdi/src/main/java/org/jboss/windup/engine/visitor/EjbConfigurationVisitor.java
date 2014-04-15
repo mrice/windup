@@ -28,6 +28,7 @@ import org.jboss.windup.graph.model.meta.xml.EjbConfigurationFacet;
 import org.jboss.windup.graph.model.meta.xml.NamespaceMeta;
 import org.jboss.windup.graph.model.resource.JavaClass;
 import org.jboss.windup.graph.model.resource.XmlResource;
+import org.joox.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -86,7 +87,7 @@ public class EjbConfigurationVisitor extends EmptyGraphVisitor {
 					namespace = doc.getFirstChild().getNamespaceURI();
 				}
 				
-				String version = $(doc).find("ejb-jar").first().attr("version");
+				String version = $(doc).attr("version");
 
 				//if the version attribute isn't found, then grab it from the XSD name if we can.
 				if(StringUtils.isBlank(version)) {

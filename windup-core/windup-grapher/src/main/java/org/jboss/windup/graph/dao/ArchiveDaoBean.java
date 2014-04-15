@@ -1,12 +1,9 @@
 package org.jboss.windup.graph.dao;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Iterator;
 
 import org.jboss.windup.graph.model.resource.ArchiveResource;
+import org.jboss.windup.graph.model.resource.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +36,20 @@ public class ArchiveDaoBean extends BaseDaoBean<ArchiveResource> {
 		return context.getFramed().frameVertices(pipeline, ArchiveResource.class);
 	}
 
+
+	public boolean isArchiveResource(Resource resource) {
+		return (new GremlinPipeline<Vertex, Vertex>(resource.asVertex())).out("archiveResourceFacet").iterator().hasNext();
+	}
+	
+	public ArchiveResource getArchiveFromResource(Resource resource) {
+		Iterator<Vertex> v = (new GremlinPipeline<Vertex, Vertex>(resource.asVertex())).out("archiveResourceFacet").iterator();
+		if(v.hasNext()) {
+			return context.getFramed().frame(v.next(), ArchiveResource.class);
+		}
+		
+		return null;
+	}
+	
 	public ArchiveDaoBean() {
 		super(ArchiveResource.class);
 	}

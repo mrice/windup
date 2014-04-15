@@ -2,13 +2,15 @@ package org.jboss.windup.engine.visitor.reporter.html.model;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
-public class ArchiveReport {
+public class ArchiveReport implements Comparable<ArchiveReport> {
 
 	private String applicationPath;
 	private Level level = Level.PRIMARY;
 	
-	private final List<ResourceReportRow> resources = new LinkedList<>();
+	private final Set<ResourceReportRow> resources = new TreeSet<ResourceReportRow>();
 
 	public String getApplicationPath() {
 		return applicationPath;
@@ -26,12 +28,12 @@ public class ArchiveReport {
 		this.level = level;
 	}
 
-	public List<ResourceReportRow> getResources() {
+	public Set<ResourceReportRow> getResources() {
 		return resources;
 	}
 
 
-	public static class ResourceReportRow {
+	public static class ResourceReportRow implements Comparable<ResourceReportRow> {
 	
 		private Name resourceName;
 		
@@ -58,5 +60,15 @@ public class ArchiveReport {
 			return issueTags;
 		}
 		
+		@Override
+		public int compareTo(ResourceReportRow o) {
+			return this.getResourceName().getName().compareTo(o.getResourceName().getName());
+		}
+	}
+
+
+	@Override
+	public int compareTo(ArchiveReport o) {
+		return this.getApplicationPath().compareTo(o.getApplicationPath());
 	}
 }

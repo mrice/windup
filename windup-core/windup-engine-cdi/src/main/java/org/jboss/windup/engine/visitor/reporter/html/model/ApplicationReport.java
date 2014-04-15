@@ -1,12 +1,12 @@
 package org.jboss.windup.engine.visitor.reporter.html.model;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class ApplicationReport {
 
 	private String applicationName;
-	private final List<ArchiveReport> archives = new LinkedList<>();
+	private final Set<ArchiveReport> archives = new TreeSet<ArchiveReport>();
 	
 	public void setApplicationName(String applicationName) {
 		this.applicationName = applicationName;
@@ -14,7 +14,7 @@ public class ApplicationReport {
 	public String getApplicationName() {
 		return applicationName;
 	}
-	public List<ArchiveReport> getArchives() {
+	public Set<ArchiveReport> getArchives() {
 		return archives;
 	}
 }

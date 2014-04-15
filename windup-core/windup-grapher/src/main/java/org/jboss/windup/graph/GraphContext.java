@@ -24,6 +24,7 @@ import org.jboss.windup.graph.model.meta.xml.HibernateConfigurationFacet;
 import org.jboss.windup.graph.model.meta.xml.MavenFacet;
 import org.jboss.windup.graph.model.meta.xml.NamespaceMeta;
 import org.jboss.windup.graph.model.meta.xml.SpringConfigurationFacet;
+import org.jboss.windup.graph.model.meta.xml.WebConfigurationFacet;
 import org.jboss.windup.graph.model.resource.ArchiveEntryResource;
 import org.jboss.windup.graph.model.resource.ArchiveResource;
 import org.jboss.windup.graph.model.resource.EarArchive;
@@ -107,7 +108,7 @@ public class GraphContext {
 				indexed(Vertex.class).make();
 		
 		TitanKey archiveEntryKey = graph.makeKey("archiveEntry").dataType(String.class).
-				indexed("search", Vertex.class).make();
+				indexed(Vertex.class).make();
 		
 		TitanKey typeKey = graph.makeKey("type").dataType(String.class).
 				indexed(Vertex.class).make();
@@ -156,6 +157,7 @@ public class GraphContext {
 				.withClass(SpecificationVersionMeta.class)
 			    .withClass(JarManifest.class)
 			    .withClass(SourceReport.class)
+			    .withClass(WebConfigurationFacet.class)
 			    .build(), 
 			    new GremlinGroovyModule()
 		);

@@ -96,8 +96,6 @@ public class ManifestSourceRenderer extends EmptyGraphVisitor {
 			FileUtils.forceMkdir(archiveDirectory);
 			
 			File clzDirectory = new File(archiveDirectory, "resources");
-			FileUtils.forceMkdir(clzDirectory);
-			
 			
 			String fullName = null;
 			String name = null;
@@ -117,6 +115,8 @@ public class ManifestSourceRenderer extends EmptyGraphVisitor {
 			report.setSourceName(name);
 			
 			File reportRef = new File(clzDirectory, fullName+".html");
+			FileUtils.forceMkdir(reportRef.getParentFile());
+			
 			ReportContext reportContext = new ReportContext(runDirectory, reportRef.getParentFile());
 			objects.put("report", reportContext);
 			

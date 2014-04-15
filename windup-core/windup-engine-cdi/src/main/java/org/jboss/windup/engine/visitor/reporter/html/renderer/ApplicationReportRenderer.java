@@ -18,11 +18,16 @@ import org.jboss.windup.engine.visitor.reporter.html.model.Level;
 import org.jboss.windup.engine.visitor.reporter.html.model.SimpleName;
 import org.jboss.windup.engine.visitor.reporter.html.model.Tag;
 import org.jboss.windup.graph.dao.ApplicationReferenceDaoBean;
+import org.jboss.windup.graph.dao.ArchiveDaoBean;
+import org.jboss.windup.graph.dao.EJBConfigurationDaoBean;
 import org.jboss.windup.graph.dao.JarManifestDaoBean;
 import org.jboss.windup.graph.dao.JavaClassDaoBean;
+import org.jboss.windup.graph.dao.WebConfigurationDaoBean;
 import org.jboss.windup.graph.dao.XmlResourceDaoBean;
 import org.jboss.windup.graph.model.meta.ApplicationReference;
 import org.jboss.windup.graph.model.meta.JarManifest;
+import org.jboss.windup.graph.model.meta.xml.EjbConfigurationFacet;
+import org.jboss.windup.graph.model.meta.xml.WebConfigurationFacet;
 import org.jboss.windup.graph.model.resource.ArchiveEntryResource;
 import org.jboss.windup.graph.model.resource.ArchiveResource;
 import org.jboss.windup.graph.model.resource.JavaClass;
@@ -52,7 +57,16 @@ public class ApplicationReportRenderer extends EmptyGraphVisitor {
 	private JarManifestDaoBean manifestDao;
 	
 	@Inject
+	private ArchiveDaoBean archiveDao;
+	
+	@Inject
 	private NamingUtility namingUtility;
+	
+	@Inject
+	private WebConfigurationDaoBean webConfigurationDao;
+	
+	@Inject
+	private EJBConfigurationDaoBean ejbConfigurationDao;
 	
 	private Configuration cfg;
 	private File runDirectory;
@@ -100,7 +114,20 @@ public class ApplicationReportRenderer extends EmptyGraphVisitor {
 	
 	protected void recurseArchive(ApplicationReport report, ArchiveResource resource) {
 		ArchiveReport archiveReport = new ArchiveReport();
-		archiveReport.setApplicationPath(resource.getArchiveName());
+		
+		String name = null;
+		if(resource.getResource() instanceof ArchiveEntryResource) {
+			ArchiveEntryResource parentEntry = context.getGraphContext().getFramed().frame(resource.getResource().asVertex(), ArchiveEntryResource.class);
+			name = namingUtility.buildFullPath(parentEntry);
+		}
+		else {
+			name = resource.getArchiveName();
+		}
+		
+		
+		
+		
+		archiveReport.setApplicationPath(name);
 		
 		for(ArchiveEntryResource entry : resource.getChildrenArchiveEntries()) {
 			//check to see about facets.
@@ -137,6 +164,18 @@ public class ApplicationReportRenderer extends EmptyGraphVisitor {
 			reportRow.setResourceName(namingUtility.getReportXmlResource(runDirectory, reportReference, resource));
 			reportRow.getTechnologyTags().add(new Tag("XML", Level.SUCCESS));
 					
+			//check the XML for some tags...
+			if(ejbConfigurationDao.isEJBConfiguration(resource)) {
+				EjbConfigurationFacet ejbConfiguration = ejbConfigurationDao.getEjbConfigurationFromResource(resource);
+				reportRow.getTechnologyTags().add(new Tag("EJB "+ejbConfiguration.getSpecificationVersion()+" Configuration", Level.SUCCESS));
+			}
+			
+			if(webConfigurationDao.isWebConfiguration(resource)) {
+				WebConfigurationFacet webConfiguration = webConfigurationDao.getWebConfigurationFromResource(resource);
+				reportRow.getTechnologyTags().add(new Tag("Web "+webConfiguration.getSpecificationVersion()+" Configuration", Level.SUCCESS));
+			}
+			
+			
 			report.getResources().add(reportRow);
 			return;
 		}
@@ -149,6 +188,11 @@ public class ApplicationReportRenderer extends EmptyGraphVisitor {
 			reportRow.getTechnologyTags().add(new Tag("Manifest", Level.SUCCESS));
 					
 			report.getResources().add(reportRow);
+			return;
+		}
+		
+		if(archiveDao.isArchiveResource(entry)) {
+			//skip.
 			return;
 		}
 		
