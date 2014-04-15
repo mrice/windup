@@ -10,6 +10,10 @@ public class ReportContext {
 	
 	
 	public ReportContext(File base, File report) {
+		if(base.isFile()) {
+			base = base.getParentFile();
+		}
+		
 		String relativeTo = base.toURI().relativize(report.toURI()).getPath();
 		String relativeFrom = report.toURI().relativize(base.toURI()).getPath();
 		

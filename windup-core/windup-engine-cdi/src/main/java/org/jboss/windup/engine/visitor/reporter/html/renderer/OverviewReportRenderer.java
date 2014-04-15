@@ -12,7 +12,7 @@ import javax.inject.Inject;
 import org.jboss.windup.engine.WindupContext;
 import org.jboss.windup.engine.visitor.base.EmptyGraphVisitor;
 import org.jboss.windup.engine.visitor.reporter.html.model.Level;
-import org.jboss.windup.engine.visitor.reporter.html.model.Link;
+import org.jboss.windup.engine.visitor.reporter.html.model.LinkName;
 import org.jboss.windup.engine.visitor.reporter.html.model.OverviewReport;
 import org.jboss.windup.engine.visitor.reporter.html.model.Tag;
 import org.slf4j.Logger;
@@ -56,7 +56,7 @@ public class OverviewReportRenderer extends EmptyGraphVisitor {
 		List<OverviewReport> overviewReports = new LinkedList<>();
 		OverviewReport report = new OverviewReport();
 		overviewReports.add(report);
-		Link applicationLink = new Link("#", "application.war");
+		LinkName applicationLink = new LinkName("#", "application.war");
 		report.setApplicationLink(applicationLink);
 		report.getTechnologyTags().add(new Tag("WAR", Level.INFO));
 		report.getIssueTags().add(new Tag("Testing", Level.DANGER));

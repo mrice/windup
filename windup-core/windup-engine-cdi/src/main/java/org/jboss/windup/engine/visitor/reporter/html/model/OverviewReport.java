@@ -5,16 +5,16 @@ import java.util.List;
 
 public class OverviewReport {
 
-	private Link applicationLink;
+	private LinkName applicationLink;
 	
 	private final List<Tag> technologyTags = new LinkedList<>();
 	private Effort effort = Effort.LOW;
 	private final List<Tag> issueTags = new LinkedList<>();
 	
-	public Link getApplicationLink() {
+	public LinkName getApplicationLink() {
 		return applicationLink;
 	}
-	public void setApplicationLink(Link applicationLink) {
+	public void setApplicationLink(LinkName applicationLink) {
 		this.applicationLink = applicationLink;
 	}
 	public List<Tag> getTechnologyTags() {

@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.jboss.windup.graph.model.resource.JavaClass;
+import org.jboss.windup.graph.model.resource.Resource;
 
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
@@ -82,6 +83,20 @@ public class JavaClassDaoBean extends BaseDaoBean<JavaClass> {
 		return context.getFramed().frameVertices(pipeline, JavaClass.class);
 	}
 	
+
+	
+	public boolean isJavaClass(Resource resource) {
+		return (new GremlinPipeline<Vertex, Vertex>(resource.asVertex())).out("javaClassFacet").iterator().hasNext();
+	}
+	
+	public JavaClass getJavaClassFromResource(Resource resource) {
+		Iterator<Vertex> v = (new GremlinPipeline<Vertex, Vertex>(resource.asVertex())).out("javaClassFacet").iterator();
+		if(v.hasNext()) {
+			return context.getFramed().frame(v.next(), JavaClass.class);
+		}
+		
+		return null;
+	}
 	
 	public void markAsBlacklistCandidate(JavaClass clz) {
 		clz.asVertex().setProperty("blacklistCandidate", true);
@@ -142,9 +157,6 @@ public class JavaClassDaoBean extends BaseDaoBean<JavaClass> {
 				.has("customerPackage").V();
 		return context.getFramed().frameVertices(pipeline, JavaClass.class);
 	}
-	
-	
-	
 	
 	
 	public enum JavaVersion {

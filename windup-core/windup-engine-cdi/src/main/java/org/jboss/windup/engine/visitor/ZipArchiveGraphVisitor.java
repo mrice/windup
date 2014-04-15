@@ -1,17 +1,14 @@
 package org.jboss.windup.engine.visitor;
 
 import java.io.File;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import javax.inject.Inject;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.jboss.windup.engine.util.ZipUtil;
 import org.jboss.windup.engine.visitor.base.EmptyGraphVisitor;
 import org.jboss.windup.graph.dao.ApplicationReferenceDaoBean;
 import org.jboss.windup.graph.dao.ArchiveDaoBean;
@@ -71,6 +68,12 @@ public class ZipArchiveGraphVisitor extends EmptyGraphVisitor {
 		fileDao.commit();
 	}
 	
+	
+	@Override
+	public void visitArchive(ArchiveResource entry) {
+		
+	}
+	
 	@Override
 	public void visitFile(FileResource file) {
 		//now, check to see whether it is a JAR, and republish the typed value.
@@ -91,30 +94,7 @@ public class ZipArchiveGraphVisitor extends EmptyGraphVisitor {
 				applicationReference.setArchive(archive);
 				
 				archive.setArchiveName(reference.getName());
-				archive.setFileResource(file);
-				
-				//first, make the file reference.
-				Enumeration<?> entries = zipFile.entries();
-				while(entries.hasMoreElements()) {
-					ZipEntry entry = (ZipEntry)entries.nextElement();
-					//skip.
-					if(entry.isDirectory()) {
-						continue;
-					}
-					if(endsWithExtension(entry.getName())) {
-						//unzip.
-						String subArchiveName = StringUtils.substringAfterLast(entry.getName(), "/");
-						java.io.File subArchiveTempFile = ZipUtil.unzipToTemp(zipFile, entry);
-						org.jboss.windup.graph.model.resource.FileResource subArchiveTempFileReference = fileDao.getByFilePath(subArchiveTempFile.getAbsolutePath());
-
-						ArchiveResource subArchive = archiveDao.create(null);
-						subArchive.setArchiveName(subArchiveName);
-						subArchive.setFileResource(subArchiveTempFileReference);
-						
-						//add the element as a child..
-						archive.addChildArchive(subArchive);
-					}
-				}
+				archive.setResource(file);
 			} catch (Exception e) {
 				LOG.error("Exception creating zip from: "+filePath, e);
 			}

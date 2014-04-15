@@ -60,7 +60,7 @@ public class JavaClassVisitor extends EmptyGraphVisitor {
 		}
 		
 		try {
-			ClassParser classParser = new ClassParser(archive.getFileResource().getFilePath(), entry.getArchiveEntry());
+			ClassParser classParser = new ClassParser(archive.asFile().getAbsolutePath(), entry.getArchiveEntry());
 			JavaClass parsed = classParser.parse();
 			JavaClassProfiler iv = new JavaClassProfiler(parsed, javaClassDao, javaMethodDao, entry);
 			iv.process();

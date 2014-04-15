@@ -27,7 +27,7 @@ public class WindupContext {
 		runDirectory = new File(FileUtils.getTempDirectory(), UUID.randomUUID().toString());
 		graphContext = new GraphContext(new File(runDirectory, "windup-graph"));
 		packagesToProfile = new HashSet<>();
-		packagesToProfile.add("org.jbpm");
+		packagesToProfile.add("com.acme");
 	}
 	
 	public Set<String> getPackagesToProfile() {

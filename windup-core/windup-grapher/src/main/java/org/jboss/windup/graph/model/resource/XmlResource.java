@@ -55,11 +55,30 @@ public interface XmlResource extends Resource {
 		
 		@Override
 		public InputStream asInputStream() throws IOException {
+			Resource underlyingResource = this.getResource();
+			if(underlyingResource instanceof ArchiveEntryResource) {
+					ArchiveEntryResource resource = frame(underlyingResource.asVertex(), ArchiveEntryResource.class);
+					return resource.asInputStream();
+			}
+			else if(underlyingResource instanceof FileResource) {
+				FileResource resource = frame(underlyingResource.asVertex(), FileResource.class);
+				return resource.asInputStream();
+			}
+			
 			return this.getResource().asInputStream();
 		}
 		
 		@Override
 		public File asFile() throws IOException {
+			Resource underlyingResource = this.getResource();
+			if(underlyingResource instanceof ArchiveEntryResource) {
+				ArchiveEntryResource resource = frame(underlyingResource.asVertex(), ArchiveEntryResource.class);
+				return resource.asFile();
+			}
+			else if(underlyingResource instanceof FileResource) {
+				FileResource resource = frame(underlyingResource.asVertex(), FileResource.class);
+				return resource.asFile();
+			}
 			return this.getResource().asFile();
 		}
 		

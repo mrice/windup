@@ -13,7 +13,7 @@
 	<tr>
 	  <td>${ejb.name}</td>
 	  <td>${ejb.qualifiedName}</td>
-	  <td>${ejb.jndiName}</td>
+	  <td>${ejb.ejbType}</td>
 	</tr>
 </#macro>
 
@@ -133,7 +133,7 @@
             <div class="col-md-6">
               <table class="table table-striped table-bordered">
                 <tr>
-                  <th>Bean Name</th><th>Class</th><th>JNDI</th>
+                  <th>Bean Name</th><th>Class</th><th>Type</th>
                 </tr>
 				<#list ejbs.statefulBeans as statefulBean>
                 	<@ejbRenderer statefulBean/>

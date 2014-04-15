@@ -6,7 +6,7 @@
 </#macro>
 
 <#macro resourceRenderer resource>
-	<tr><td><a href="${resource.resourceLink.url}">${resource.resourceLink.name}</a></td>
+	<tr><td>${resource.resourceName}</td>
 		<td>
 			<#list resource.technologyTags as tag>
 		    <@tagRenderer tag>${tag.title}</@tagRenderer>

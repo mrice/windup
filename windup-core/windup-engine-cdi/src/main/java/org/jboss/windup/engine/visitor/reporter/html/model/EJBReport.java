@@ -23,17 +23,17 @@ public class EJBReport {
 	
 	public static class EJBRow {
 		private String name;
-		private String qualifiedName;
-		private String jndiName;
+		private Name qualifiedName;
+		private String ejbType;
 		
 		public EJBRow() {
 
 		}
 		
-		public EJBRow(String name, String qualifiedName, String jndiName) {
+		public EJBRow(String name, Name qualifiedName, String jndiName) {
 			this.name = name;
 			this.qualifiedName = qualifiedName;
-			this.jndiName = jndiName;
+			this.ejbType = ejbType;
 		}
 
 		public String getName() {
@@ -42,25 +42,18 @@ public class EJBReport {
 		public void setName(String name) {
 			this.name = name;
 		}
-		public String getQualifiedName() {
+		public Name getQualifiedName() {
 			return qualifiedName;
 		}
-		public void setQualifiedName(String qualifiedName) {
+		public void setQualifiedName(Name qualifiedName) {
 			this.qualifiedName = qualifiedName;
 		}
-		public String getJndiName() {
-			return jndiName;
-		}
-		public void setJndiName(String jndiName) {
-			this.jndiName = jndiName;
-		}
-		
 	}
 	
 	public static class MDBRow {
 
 		private String name;
-		private String qualifiedName;
+		private Name qualifiedName;
 		private String queueName;
 		
 
@@ -68,7 +61,7 @@ public class EJBReport {
 
 		}
 		
-		public MDBRow(String name, String qualifiedName, String queueName) {
+		public MDBRow(String name, Name qualifiedName, String queueName) {
 			this.name = name;
 			this.qualifiedName = qualifiedName;
 			this.queueName = queueName;
@@ -81,10 +74,10 @@ public class EJBReport {
 		public void setName(String name) {
 			this.name = name;
 		}
-		public String getQualifiedName() {
+		public Name getQualifiedName() {
 			return qualifiedName;
 		}
-		public void setQualifiedName(String qualifiedName) {
+		public void setQualifiedName(Name qualifiedName) {
 			this.qualifiedName = qualifiedName;
 		}
 		public String getQueueName() {

@@ -3,11 +3,14 @@ package org.jboss.windup.engine.visitor;
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.windup.engine.visitor.base.EmptyGraphVisitor;
 import org.jboss.windup.graph.dao.ArchiveDaoBean;
 import org.jboss.windup.graph.dao.ArchiveEntryDaoBean;
@@ -47,6 +50,9 @@ public class ArchiveEntryIndexVisitor extends EmptyGraphVisitor {
 			LOG.info("Processed: "+i+" of "+total+" Archives.");
 			i++;
 		}
+		
+		final int finalTotal = (int)archiveDao.count(archiveDao.getAll());
+		LOG.info("Total: "+finalTotal+" Archives.");
 	}
 	
 	@Override
@@ -69,6 +75,24 @@ public class ArchiveEntryIndexVisitor extends EmptyGraphVisitor {
 				ArchiveEntryResource resource = archiveEntryDao.create(null);
 				resource.setArchiveEntry(entry.getName());
 				resource.setArchive(file);
+				
+				//now look for recursive archives...
+				if(endsWithExtension(entry.getName())) {
+					String subArchiveName = entry.getName();
+					if(StringUtils.contains(entry.getName(), "/")) {
+						subArchiveName = StringUtils.substringAfterLast(subArchiveName, "/");
+					}
+					LOG.info("Found nested archive: "+subArchiveName);
+					
+					//create an archive record, and process it.
+					ArchiveResource subArchive = archiveDao.create();
+					subArchive.setArchiveName(subArchiveName);
+					subArchive.setResource(resource);
+					result.addChildArchive(subArchive);
+					
+					visitArchive(subArchive);
+				}
+				
 			}
 		} catch (IOException e) {
 			LOG.error("Exception while reading JAR.", e);
@@ -77,5 +101,26 @@ public class ArchiveEntryIndexVisitor extends EmptyGraphVisitor {
 			org.apache.commons.io.IOUtils.closeQuietly(zipFileReference);
 			archiveDao.commit();
 		}
+	}
+	
+
+	private boolean endsWithExtension(String path) {
+		for(String extension : getZipExtensions()) {
+			if(StringUtils.endsWith(path, extension)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private Set<String> getZipExtensions() {
+		Set<String> extensions = new HashSet<String>();
+		extensions.add(".war");
+		extensions.add(".ear");
+		extensions.add(".jar");
+		extensions.add(".sar");
+		extensions.add(".rar");
+		
+		return extensions;
 	}
 }

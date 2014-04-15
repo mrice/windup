@@ -33,17 +33,17 @@ public class ArchiveReport {
 
 	public static class ResourceReportRow {
 	
-		private Link resourceLink;
+		private Name resourceName;
 		
 		private final List<Tag> technologyTags = new LinkedList<>();
 		private Effort effort;
 		private final List<Tag> issueTags = new LinkedList<>();
 		
-		public Link getResourceLink() {
-			return resourceLink;
+		public Name getResourceName() {
+			return resourceName;
 		}
-		public void setResourceLink(Link resourceLink) {
-			this.resourceLink = resourceLink;
+		public void setResourceName(Name resourceName) {
+			this.resourceName = resourceName;
 		}
 		public List<Tag> getTechnologyTags() {
 			return technologyTags;

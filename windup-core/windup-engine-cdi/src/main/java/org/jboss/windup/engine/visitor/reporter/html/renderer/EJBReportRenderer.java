@@ -2,17 +2,31 @@ package org.jboss.windup.engine.visitor.reporter.html.renderer;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jboss.windup.engine.WindupContext;
 import org.jboss.windup.engine.visitor.base.EmptyGraphVisitor;
 import org.jboss.windup.engine.visitor.reporter.html.model.EJBReport;
 import org.jboss.windup.engine.visitor.reporter.html.model.EJBReport.EJBRow;
 import org.jboss.windup.engine.visitor.reporter.html.model.EJBReport.MDBRow;
+import org.jboss.windup.engine.visitor.reporter.html.model.LinkName;
+import org.jboss.windup.engine.visitor.reporter.html.model.Name;
+import org.jboss.windup.engine.visitor.reporter.html.model.ReportContext;
+import org.jboss.windup.engine.visitor.reporter.html.model.SimpleName;
+import org.jboss.windup.graph.dao.EJBEntityDaoBean;
+import org.jboss.windup.graph.dao.EJBSessionBeanDaoBean;
+import org.jboss.windup.graph.dao.MessageDrivenDaoBean;
+import org.jboss.windup.graph.dao.SourceReportDao;
+import org.jboss.windup.graph.model.meta.javaclass.EjbSessionBeanFacet;
+import org.jboss.windup.graph.model.meta.javaclass.MessageDrivenBeanFacet;
+import org.jboss.windup.graph.model.resource.FileResource;
+import org.jboss.windup.graph.model.resource.JavaClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +39,21 @@ public class EJBReportRenderer extends EmptyGraphVisitor {
 	@Inject
 	private WindupContext context;
 	
+	@Inject
+	private EJBSessionBeanDaoBean sessionDao;
+	
+	@Inject
+	private EJBEntityDaoBean entityDao;
+	
+	@Inject
+	private SourceReportDao sourceReportDao;
+	
+	@Inject
+	private MessageDrivenDaoBean messageDrivenDao;
 
+	@Inject
+	private NamingUtility reportUtility;
+	
 	private final Configuration cfg;
 	
 	public EJBReportRenderer() {
@@ -40,17 +68,19 @@ public class EJBReportRenderer extends EmptyGraphVisitor {
 			Template template = cfg.getTemplate("/reports/templates/ejb.ftl");
 			
 			Map<String, Object> objects = new HashMap<String, Object>();
-			objects.put("ejbs", generageReports());
+			
 			
 			File runDirectory = context.getRunDirectory();
 			File archiveReportDirectory = new File(runDirectory, "applications");
 			File archiveDirectory = new File(archiveReportDirectory, "application");
 			FileUtils.forceMkdir(archiveDirectory);
-			File archiveReport = new File(archiveDirectory, "ejbs.html");
+			File ejbReport = new File(archiveDirectory, "ejbs.html");
+			objects.put("ejbs", generageReports(ejbReport));
 			
-			template.process(objects, new FileWriter(archiveReport));
+			template.process(objects, new FileWriter(ejbReport));
 			
-			LOG.info("Wrote report: "+archiveReport.getAbsolutePath());
+			
+			LOG.info("Wrote report: "+ejbReport.getAbsolutePath());
 			
 		} catch (Exception e) {
 			throw new RuntimeException("Exception writing report.", e);
@@ -58,19 +88,35 @@ public class EJBReportRenderer extends EmptyGraphVisitor {
 	}
 	
 	
-	protected EJBReport generageReports() {
+	protected EJBReport generageReports(File ejbReport) {
 		EJBReport applicationReport = new EJBReport();
 		
-		for(int i=0; i<10; i++) {
-			EJBRow row = new EJBRow("ejbName"+i, "com.example.bean.ejb.ExampleName"+i, "java:/exampleName"+i);
-			applicationReport.getStatefulBeans().add(row);
-			applicationReport.getStatelessBeans().add(row);
+		for(EjbSessionBeanFacet session : sessionDao.getAll()) {
+			Name name = reportUtility.getReportJavaResource(ejbReport, session.getJavaClassFacet());
+
+			EJBRow ejbRow = new EJBRow(session.getSessionBeanName(), name, session.getSessionType());
+			
+			String type = session.getSessionType();
+			
+			if(StringUtils.equals("Stateless", type)) {
+				applicationReport.getStatelessBeans().add(ejbRow);
+			}
+			else {
+				applicationReport.getStatefulBeans().add(ejbRow);
+			}
 		}
 		
-		for(int i=0; i<5; i++) {
-			MDBRow row = new MDBRow("mdbName"+i, "com.example.bean.mdb.ExampleMDB"+i, "java:/queue/Example"+i);
+		for(MessageDrivenBeanFacet mdf : messageDrivenDao.getAll()) {
+			String name = mdf.getMessageDrivenBeanName();
+			if(StringUtils.isBlank(name)) {
+				name = mdf.getJavaClassFacet().getQualifiedName();
+			}
+			Name qualifiedName = reportUtility.getReportJavaResource(ejbReport, mdf.getJavaClassFacet());
+			
+			MDBRow row = new MDBRow(name, qualifiedName, "");
 			applicationReport.getMdbs().add(row);
 		}
 		return applicationReport;
 	}
+
 }

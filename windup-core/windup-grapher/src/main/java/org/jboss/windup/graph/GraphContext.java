@@ -17,6 +17,7 @@ import org.jboss.windup.graph.model.meta.javaclass.EjbSessionBeanFacet;
 import org.jboss.windup.graph.model.meta.javaclass.HibernateEntityFacet;
 import org.jboss.windup.graph.model.meta.javaclass.MessageDrivenBeanFacet;
 import org.jboss.windup.graph.model.meta.javaclass.SpringBeanFacet;
+import org.jboss.windup.graph.model.meta.report.SourceReport;
 import org.jboss.windup.graph.model.meta.xml.DoctypeMeta;
 import org.jboss.windup.graph.model.meta.xml.EjbConfigurationFacet;
 import org.jboss.windup.graph.model.meta.xml.HibernateConfigurationFacet;
@@ -154,7 +155,7 @@ public class GraphContext {
 				.withClass(MailserverMeta.class)
 				.withClass(SpecificationVersionMeta.class)
 			    .withClass(JarManifest.class)
-			    
+			    .withClass(SourceReport.class)
 			    .build(), 
 			    new GremlinGroovyModule()
 		);

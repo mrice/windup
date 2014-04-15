@@ -49,6 +49,7 @@ import org.jboss.windup.engine.visitor.reporter.html.renderer.JavaSourceRenderer
 import org.jboss.windup.engine.visitor.reporter.html.renderer.OverviewReportRenderer;
 import org.jboss.windup.engine.visitor.reporter.html.renderer.ServerResourceReportRenderer;
 import org.jboss.windup.engine.visitor.reporter.html.renderer.SpringReportRenderer;
+import org.jboss.windup.engine.visitor.reporter.html.renderer.XmlSourceRenderer;
 
 public class ListenerChainProvider {
 
@@ -180,6 +181,8 @@ public class ListenerChainProvider {
 	@Inject
 	private JavaSourceRenderer javaSourceRenderer;
 	
+	@Inject
+	private XmlSourceRenderer xmlSourceRenderer;
 	
 	
 	@ListenerChainQualifier
@@ -238,14 +241,18 @@ public class ListenerChainProvider {
 		//listenerChain.add(namespacesFoundReporter);
 		//listenerChain.add(exportToDotReporter);
 		
+		listenerChain.add(javaSourceRenderer);
+		listenerChain.add(xmlSourceRenderer);
+		
 		listenerChain.add(resourceRenderer);
 		listenerChain.add(overviewRenderer);
-		listenerChain.add(appReportRenderer);
+		
 		listenerChain.add(ejbRenderer);
 		listenerChain.add(hibernateRenderer);
 		listenerChain.add(springRenderer);
 		listenerChain.add(serverResourceRenderer);
-		listenerChain.add(javaSourceRenderer);
+		
+		listenerChain.add(appReportRenderer);
 
 		return listenerChain;
 	}
