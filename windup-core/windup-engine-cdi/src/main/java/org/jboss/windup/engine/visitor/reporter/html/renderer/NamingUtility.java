@@ -12,6 +12,7 @@ import org.jboss.windup.engine.visitor.reporter.html.model.SimpleName;
 import org.jboss.windup.graph.dao.SourceReportDao;
 import org.jboss.windup.graph.model.meta.JarManifest;
 import org.jboss.windup.graph.model.resource.ArchiveEntryResource;
+import org.jboss.windup.graph.model.resource.ArchiveResource;
 import org.jboss.windup.graph.model.resource.FileResource;
 import org.jboss.windup.graph.model.resource.JavaClass;
 import org.jboss.windup.graph.model.resource.XmlResource;
@@ -26,6 +27,25 @@ public class NamingUtility {
 	
 	@Inject
 	private SourceReportDao sourceReportDao;
+	
+	protected String buildFullPath(ArchiveEntryResource resource) {
+		String path = resource.getArchiveEntry();
+		
+		ArchiveResource archive = resource.getArchive();
+		while(archive != null) {
+			if(archive.getResource() instanceof ArchiveEntryResource) {
+				ArchiveEntryResource parentEntry = context.getGraphContext().getFramed().frame(archive.getResource().asVertex(), ArchiveEntryResource.class);
+				//prepend
+				path = parentEntry.getArchiveEntry() + "/" + path;
+				archive = archive.getParentArchive();
+			}
+			else if(archive.getResource() instanceof FileResource) {
+				path = archive.getArchiveName() + "/" + path;
+				archive = archive.getParentArchive();
+			}
+		}
+		return path;
+	}
 	
 	protected Name getReportJavaResource(File baseDirectory, File thisReport, JavaClass clz) {
 		if(!sourceReportDao.hasSourceReport(clz)) {

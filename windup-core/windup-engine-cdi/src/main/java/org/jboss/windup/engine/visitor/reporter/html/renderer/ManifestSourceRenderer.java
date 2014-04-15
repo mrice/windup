@@ -45,6 +45,9 @@ public class ManifestSourceRenderer extends EmptyGraphVisitor {
 	private SourceReportDao sourceReportDao;
 	
 	@Inject
+	private NamingUtility namingUtility;
+	
+	@Inject
 	private WindupContext context;
 	
 	private final Configuration cfg;
@@ -94,23 +97,31 @@ public class ManifestSourceRenderer extends EmptyGraphVisitor {
 			
 			File clzDirectory = new File(archiveDirectory, "resources");
 			FileUtils.forceMkdir(clzDirectory);
-			ReportContext reportContext = new ReportContext(runDirectory, clzDirectory);
-			objects.put("report", reportContext);
 			
+			
+			String fullName = null;
 			String name = null;
 			if(entry.getResource() instanceof ArchiveEntryResource) {
 				ArchiveEntryResource resource = context.getGraphContext().getFramed().frame(entry.getResource().asVertex(), ArchiveEntryResource.class);
 				name = resource.getArchiveEntry();
 				name = StringUtils.substringAfterLast(name, "/");
+				
+				fullName = namingUtility.buildFullPath(resource);
 			}
 			else if(entry.getResource() instanceof FileResource) {
 				FileResource resource = context.getGraphContext().getFramed().frame(entry.getResource().asVertex(), FileResource.class);
-				name = resource.asFile().getName(); 
+				name = resource.asFile().getName();
+				
+				fullName = name;
 			}
 			report.setSourceName(name);
 			
-			File reportRef = new File(clzDirectory, name+".html");
+			File reportRef = new File(clzDirectory, fullName+".html");
+			ReportContext reportContext = new ReportContext(runDirectory, reportRef.getParentFile());
+			objects.put("report", reportContext);
+			
 			template.process(objects, new FileWriter(reportRef));
+			
 			
 			LOG.info("Wrote overview report: "+reportRef.getAbsolutePath());
 			

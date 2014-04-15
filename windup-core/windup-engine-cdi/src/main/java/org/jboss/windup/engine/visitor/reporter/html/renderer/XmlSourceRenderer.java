@@ -45,6 +45,9 @@ public class XmlSourceRenderer extends EmptyGraphVisitor {
 	@Inject
 	private WindupContext context;
 	
+	@Inject
+	private NamingUtility namingUtility;
+	
 	private final Configuration cfg;
 	
 	public XmlSourceRenderer() {
@@ -90,24 +93,34 @@ public class XmlSourceRenderer extends EmptyGraphVisitor {
 			File archiveDirectory = new File(archiveReportDirectory, "application");
 			FileUtils.forceMkdir(archiveDirectory);
 			
-			File clzDirectory = new File(archiveDirectory, "resources");
-			FileUtils.forceMkdir(clzDirectory);
-			ReportContext reportContext = new ReportContext(runDirectory, clzDirectory);
-			objects.put("report", reportContext);
+			File resourceDirectory = new File(archiveDirectory, "resources");
+			FileUtils.forceMkdir(resourceDirectory);
 			
+			
+			String fullName = null;
 			String name = null;
 			if(entry.getResource() instanceof ArchiveEntryResource) {
 				ArchiveEntryResource resource = context.getGraphContext().getFramed().frame(entry.getResource().asVertex(), ArchiveEntryResource.class);
 				name = resource.getArchiveEntry();
 				name = StringUtils.substringAfterLast(name, "/");
+				
+				fullName = namingUtility.buildFullPath(resource);
 			}
 			else if(entry.getResource() instanceof FileResource) {
+				//TODO: fix this for non-archive XML.  
+				//This should recurse back to find the root directory.
 				FileResource resource = context.getGraphContext().getFramed().frame(entry.getResource().asVertex(), FileResource.class);
 				name = resource.asFile().getName(); 
+				fullName = name;
 			}
 			report.setSourceName(name);
 			
-			File reportRef = new File(clzDirectory, name+".html");
+			
+			File reportRef = new File(resourceDirectory, fullName+".html");
+			FileUtils.forceMkdir(reportRef.getParentFile());
+			
+			ReportContext reportContext = new ReportContext(runDirectory, reportRef.getParentFile());
+			objects.put("report", reportContext);
 			template.process(objects, new FileWriter(reportRef));
 			
 			LOG.info("Wrote overview report: "+reportRef.getAbsolutePath());
