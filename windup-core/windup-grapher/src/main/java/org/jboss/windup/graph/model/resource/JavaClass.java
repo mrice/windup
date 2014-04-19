@@ -79,6 +79,8 @@ public interface JavaClass extends Resource {
 	@Adjacency(label="javaMethod", direction=Direction.OUT)
 	public Iterable<JavaMethod> getJavaMethods();
 	
+	@GremlinGroovy("it.in('javaClassFacet').in('childArchiveEntry')")
+	public Iterable<ArchiveResource> getArchivesProvidingClass();
 	
 	@GremlinGroovy("it.sideEffect{x=it}.out('extends', 'imports', 'implements').dedup().filter{it!=x}")
 	public Iterable<JavaClass> dependsOnJavaClass();

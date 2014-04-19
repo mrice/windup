@@ -16,10 +16,12 @@ import org.jboss.windup.engine.WindupContext;
 import org.jboss.windup.engine.visitor.base.EmptyGraphVisitor;
 import org.jboss.windup.engine.visitor.reporter.html.model.ApplicationContext;
 import org.jboss.windup.engine.visitor.reporter.html.model.ClassloaderReport;
+import org.jboss.windup.engine.visitor.reporter.html.model.SimpleName;
 import org.jboss.windup.engine.visitor.reporter.html.model.ClassloaderReport.ClassLoaderReportRow;
 import org.jboss.windup.engine.visitor.reporter.html.model.ClassloaderReport.ClassReference;
 import org.jboss.windup.engine.visitor.reporter.html.model.Name;
 import org.jboss.windup.graph.dao.JavaClassDaoBean;
+import org.jboss.windup.graph.model.resource.ArchiveResource;
 import org.jboss.windup.graph.model.resource.JavaClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +65,7 @@ public class DuplicateClassloaderReportRenderer extends EmptyGraphVisitor {
 			
 			ApplicationContext appCtx = new ApplicationContext(namingUtility.getApplicationName()); 
 		
-			ClassloaderReport report = new ClassloaderReport("Duplicates", "Duplicate", "Leveraged By");
+			ClassloaderReport report = new ClassloaderReport("Duplicates", "Duplicate", "Provided By");
 			
 			//for each class leveraging a blacklist...
 			for(JavaClass clz : javaClassDao.getAllDuplicateClasses()) {
@@ -71,7 +73,7 @@ public class DuplicateClassloaderReportRenderer extends EmptyGraphVisitor {
 	
 				//get reference...
 				ClassLoaderReportRow row = new ClassLoaderReportRow(name);
-				addAll(row.getReferences(), clz.providesForJavaClass());
+				addAll(row.getReferences(), clz.getArchivesProvidingClass());
 				
 				report.getClasses().add(row);
 			}
@@ -88,9 +90,10 @@ public class DuplicateClassloaderReportRenderer extends EmptyGraphVisitor {
 		
 	}
 	
-	public void addAll(Collection<ClassReference> references, Iterable<JavaClass> clzs) {
-		for(JavaClass clz : clzs) {
-			Name name = namingUtility.getReportJavaResource(runDirectory, reportReference.getParentFile(), clz);
+	public void addAll(Collection<ClassReference> references, Iterable<ArchiveResource> archives) {
+		for(ArchiveResource resource : archives) {
+			//build the full path...
+			Name name = new SimpleName(namingUtility.buildFullPath(resource));
 			ClassReference clzRef = new ClassReference("", name);
 			references.add(clzRef);
 		}

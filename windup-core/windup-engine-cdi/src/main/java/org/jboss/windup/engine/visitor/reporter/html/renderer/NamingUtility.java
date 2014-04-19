@@ -68,6 +68,25 @@ public class NamingUtility {
 		return path;
 	}
 	
+	protected String buildFullPath(ArchiveResource resource) {
+		String path = resource.getArchiveName();
+		
+		ArchiveResource archive = resource;
+		while(archive != null) {
+			if(archive.getResource() instanceof ArchiveEntryResource) {
+				ArchiveEntryResource parentEntry = context.getGraphContext().getFramed().frame(archive.getResource().asVertex(), ArchiveEntryResource.class);
+				//prepend
+				path = parentEntry.getArchiveEntry() + "/" + path;
+				archive = archive.getParentArchive();
+			}
+			else if(archive.getResource() instanceof FileResource) {
+				path = archive.getArchiveName() + "/" + path;
+				archive = archive.getParentArchive();
+			}
+		}
+		return path;
+	}
+	
 	protected Name getReportJavaResource(File baseDirectory, File thisReport, JavaClass clz) {
 		if(!sourceReportDao.hasSourceReport(clz)) {
 			return new SimpleName(clz.getQualifiedName());
