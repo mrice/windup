@@ -27,8 +27,8 @@ import org.slf4j.LoggerFactory;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 
-public class BlacklistClassloaderReportRenderer extends EmptyGraphVisitor {
-	private static final Logger LOG = LoggerFactory.getLogger(BlacklistClassloaderReportRenderer.class);
+public class NotFoundClassloaderReportRenderer extends EmptyGraphVisitor {
+	private static final Logger LOG = LoggerFactory.getLogger(NotFoundClassloaderReportRenderer.class);
 	
 	@Inject
 	private WindupContext context;
@@ -53,7 +53,7 @@ public class BlacklistClassloaderReportRenderer extends EmptyGraphVisitor {
 		File archiveReportDirectory = new File(runDirectory, "applications");
 		File archiveDirectory = new File(archiveReportDirectory, "application");
 		FileUtils.forceMkdir(archiveDirectory);
-		reportReference = new File(archiveDirectory, "classloader-blacklists.html");
+		reportReference = new File(archiveDirectory, "classloader-notfound.html");
 	}
 
 	@Override
@@ -63,15 +63,15 @@ public class BlacklistClassloaderReportRenderer extends EmptyGraphVisitor {
 			
 			ApplicationContext appCtx = new ApplicationContext(namingUtility.getApplicationName()); 
 		
-			ClassloaderReport report = new ClassloaderReport("Blacklists", "Class", "Blacklist");
+			ClassloaderReport report = new ClassloaderReport("Class Not Found", "Class Not Found", "Referenced By");
 			
 			//for each class leveraging a blacklist...
-			for(JavaClass clz : javaClassDao.findClassesLeveragingCandidateBlacklists()) {
+			for(JavaClass clz : javaClassDao.getAllClassNotFound()) {
 				Name name = namingUtility.getReportJavaResource(runDirectory, reportReference.getParentFile(), clz);
 	
 				//get reference...
 				ClassLoaderReportRow row = new ClassLoaderReportRow(name);
-				addAll(row.getReferences(), javaClassDao.findLeveragedCandidateBlacklists(clz));
+				addAll(row.getReferences(), clz.providesForJavaClass());
 				
 				report.getClasses().add(row);
 			}

@@ -79,7 +79,6 @@ public class NamingUtility {
 		ReportContext toBase = new ReportContext(baseDirectory, thisReport);
 		ReportContext fromBase = new ReportContext(baseDirectory, reportLocation.asFile());
 		
-		LOG.info("Relative: "+toBase.getRelativeFrom()+" , "+fromBase.getRelativeTo());
 		Name linked = new LinkName(toBase.getRelativeFrom()+fromBase.getRelativeTo(), clz.getQualifiedName());
 		return linked;
 	}
@@ -94,7 +93,6 @@ public class NamingUtility {
 		ReportContext toBase = new ReportContext(baseDirectory, thisReport);
 		ReportContext fromBase = new ReportContext(baseDirectory, reportLocation.asFile());
 		
-		LOG.info("Relative: "+toBase.getRelativeFrom()+" , "+fromBase.getRelativeTo());
 		Name linked = new LinkName(toBase.getRelativeFrom()+fromBase.getRelativeTo(), getXmlResourceName(xml));
 		return linked;
 	}
@@ -110,7 +108,6 @@ public class NamingUtility {
 		ReportContext fromBase = new ReportContext(baseDirectory, reportLocation.asFile());
 		
 		
-		LOG.info("Relative: "+toBase.getRelativeFrom()+" , "+fromBase.getRelativeTo());
 		Name linked = new LinkName(toBase.getRelativeFrom()+fromBase.getRelativeTo(), getPropertiesResourceName(properties));
 		return linked;
 	}
@@ -126,7 +123,6 @@ public class NamingUtility {
 		ReportContext fromBase = new ReportContext(baseDirectory, reportLocation.asFile());
 		
 		
-		LOG.info("Relative: "+toBase.getRelativeFrom()+" , "+fromBase.getRelativeTo());
 		Name linked = new LinkName(toBase.getRelativeFrom()+fromBase.getRelativeTo(), getManifestResourceName(manifest));
 		return linked;
 	}
@@ -141,7 +137,7 @@ public class NamingUtility {
 			FileResource resource = context.getGraphContext().getFramed().frame(entry.getResource().asVertex(), FileResource.class);
 			return resource.getFilePath();
 		}
-		LOG.info("Link is null.");
+		LOG.warn("Link is null.");
 		return null;
 	}
 	
@@ -154,7 +150,7 @@ public class NamingUtility {
 			FileResource resource = context.getGraphContext().getFramed().frame(manifest.getResource().asVertex(), FileResource.class);
 			return resource.getFilePath();
 		}
-		LOG.info("Link is null.");
+		LOG.warn("Link is null.");
 		return null;
 	}
 	
@@ -167,7 +163,7 @@ public class NamingUtility {
 			FileResource resource = context.getGraphContext().getFramed().frame(xml.getResource().asVertex(), FileResource.class);
 			return resource.getFilePath();
 		}
-		LOG.info("Link is null.");
+		LOG.warn("Link is null.");
 		return null;
 	}
 }

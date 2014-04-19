@@ -6,7 +6,6 @@ import java.util.List;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
-import org.apache.commons.configuration.PropertiesConfiguration.PropertiesReader;
 import org.jboss.windup.engine.WindupContext;
 import org.jboss.windup.engine.qualifier.ListenerChainQualifier;
 import org.jboss.windup.engine.visitor.ArchiveEntryIndexVisitor;
@@ -32,7 +31,6 @@ import org.jboss.windup.engine.visitor.base.GraphVisitor;
 import org.jboss.windup.engine.visitor.reporter.ArchiveDependsOnReporter;
 import org.jboss.windup.engine.visitor.reporter.ArchiveProvidesReporter;
 import org.jboss.windup.engine.visitor.reporter.ArchiveTransitiveDependsOnReporter;
-import org.jboss.windup.engine.visitor.reporter.ClassNotFoundReporter;
 import org.jboss.windup.engine.visitor.reporter.DuplicateClassReporter;
 import org.jboss.windup.engine.visitor.reporter.EjbConfigurationReporter;
 import org.jboss.windup.engine.visitor.reporter.GraphRenderReporter;
@@ -46,10 +44,12 @@ import org.jboss.windup.engine.visitor.reporter.WriteGraphToGraphMLReporter;
 import org.jboss.windup.engine.visitor.reporter.html.renderer.ApplicationReportRenderer;
 import org.jboss.windup.engine.visitor.reporter.html.renderer.BlacklistClassloaderReportRenderer;
 import org.jboss.windup.engine.visitor.reporter.html.renderer.CssJsResourceRenderer;
+import org.jboss.windup.engine.visitor.reporter.html.renderer.DuplicateClassloaderReportRenderer;
 import org.jboss.windup.engine.visitor.reporter.html.renderer.EJBReportRenderer;
 import org.jboss.windup.engine.visitor.reporter.html.renderer.HibernateReportRenderer;
 import org.jboss.windup.engine.visitor.reporter.html.renderer.JavaSourceRenderer;
 import org.jboss.windup.engine.visitor.reporter.html.renderer.ManifestSourceRenderer;
+import org.jboss.windup.engine.visitor.reporter.html.renderer.NotFoundClassloaderReportRenderer;
 import org.jboss.windup.engine.visitor.reporter.html.renderer.OverviewReportRenderer;
 import org.jboss.windup.engine.visitor.reporter.html.renderer.PropertiesSourceRenderer;
 import org.jboss.windup.engine.visitor.reporter.html.renderer.ServerResourceReportRenderer;
@@ -99,9 +99,6 @@ public class ListenerChainProvider {
 	
 	@Inject
 	private SpringConfigurationVisitor springConfigurationVisitor;
-	
-	@Inject
-	private ClassNotFoundReporter classNotFoundReporter;
 	
 	@Inject
 	private DuplicateClassReporter duplicateClassReporter;
@@ -199,7 +196,13 @@ public class ListenerChainProvider {
 	private PropertiesSourceRenderer propertiesRenderer;
 	
 	@Inject
-	private BlacklistClassloaderReportRenderer blacklistReport;
+	private BlacklistClassloaderReportRenderer blacklistRenderer;
+
+	@Inject
+	private NotFoundClassloaderReportRenderer notFoundRenderer;
+
+	@Inject
+	private DuplicateClassloaderReportRenderer duplicateRenderer;
 	
 	@ListenerChainQualifier
 	@Produces
@@ -269,7 +272,9 @@ public class ListenerChainProvider {
 		listenerChain.add(hibernateRenderer);
 		listenerChain.add(springRenderer);
 		listenerChain.add(serverResourceRenderer);
-		listenerChain.add(blacklistReport);
+		listenerChain.add(blacklistRenderer);
+		listenerChain.add(notFoundRenderer);
+		listenerChain.add(duplicateRenderer);
 		
 		listenerChain.add(appReportRenderer);
 		
