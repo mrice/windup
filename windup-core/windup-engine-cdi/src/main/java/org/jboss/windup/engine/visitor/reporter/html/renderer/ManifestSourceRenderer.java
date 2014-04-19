@@ -11,21 +11,18 @@ import javax.inject.Inject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.ivy.plugins.repository.file.FileRepository;
 import org.jboss.windup.engine.WindupContext;
 import org.jboss.windup.engine.visitor.base.EmptyGraphVisitor;
+import org.jboss.windup.engine.visitor.reporter.html.model.ApplicationContext;
 import org.jboss.windup.engine.visitor.reporter.html.model.ReportContext;
 import org.jboss.windup.engine.visitor.reporter.html.model.SourceReport;
 import org.jboss.windup.engine.visitor.reporter.html.model.SourceReport.SourceLineAnnotations;
 import org.jboss.windup.graph.dao.FileResourceDaoBean;
 import org.jboss.windup.graph.dao.JarManifestDaoBean;
 import org.jboss.windup.graph.dao.SourceReportDao;
-import org.jboss.windup.graph.dao.XmlResourceDaoBean;
 import org.jboss.windup.graph.model.meta.JarManifest;
 import org.jboss.windup.graph.model.resource.ArchiveEntryResource;
 import org.jboss.windup.graph.model.resource.FileResource;
-import org.jboss.windup.graph.model.resource.JavaClass;
-import org.jboss.windup.graph.model.resource.XmlResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,6 +73,9 @@ public class ManifestSourceRenderer extends EmptyGraphVisitor {
 			Template template = cfg.getTemplate("/reports/templates/source.ftl");
 			
 			Map<String, Object> objects = new HashMap<String, Object>();
+			
+			ApplicationContext ctx = new ApplicationContext(namingUtility.getApplicationName()); 
+			objects.put("application", ctx);
 			
 			SourceReport report = new SourceReport();
 			

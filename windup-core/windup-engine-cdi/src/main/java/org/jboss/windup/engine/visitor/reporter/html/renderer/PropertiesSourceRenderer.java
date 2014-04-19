@@ -13,6 +13,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.windup.engine.WindupContext;
 import org.jboss.windup.engine.visitor.base.EmptyGraphVisitor;
+import org.jboss.windup.engine.visitor.reporter.html.model.ApplicationContext;
 import org.jboss.windup.engine.visitor.reporter.html.model.ReportContext;
 import org.jboss.windup.engine.visitor.reporter.html.model.SourceReport;
 import org.jboss.windup.engine.visitor.reporter.html.model.SourceReport.SourceLineAnnotations;
@@ -82,6 +83,9 @@ public class PropertiesSourceRenderer extends EmptyGraphVisitor {
 			report.setSourceBlock(createBlockSettings(report.getSourceLineAnnotations()));
 			objects.put("source", report);
 			
+			ApplicationContext ctx = new ApplicationContext(namingUtility.getApplicationName()); 
+			objects.put("application", ctx);
+		
 
 			//create report context.
 			File runDirectory = context.getRunDirectory();

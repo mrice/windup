@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import org.apache.commons.io.FileUtils;
 import org.jboss.windup.engine.WindupContext;
 import org.jboss.windup.engine.visitor.base.EmptyGraphVisitor;
+import org.jboss.windup.engine.visitor.reporter.html.model.ApplicationContext;
 import org.jboss.windup.engine.visitor.reporter.html.model.ServerResourceReport;
 import org.jboss.windup.engine.visitor.reporter.html.model.ServerResourceReport.DatabaseRow;
 import org.jboss.windup.engine.visitor.reporter.html.model.ServerResourceReport.JMSQueueRow;
@@ -28,6 +29,8 @@ public class ServerResourceReportRenderer extends EmptyGraphVisitor {
 	@Inject
 	private WindupContext context;
 	
+	@Inject
+	private NamingUtility namingUtility;
 
 	private final Configuration cfg;
 	
@@ -44,6 +47,9 @@ public class ServerResourceReportRenderer extends EmptyGraphVisitor {
 			
 			Map<String, Object> objects = new HashMap<String, Object>();
 			objects.put("server", generageReports());
+			
+			ApplicationContext appCtx = new ApplicationContext(namingUtility.getApplicationName()); 
+			objects.put("application", appCtx);
 			
 			File runDirectory = context.getRunDirectory();
 			File archiveReportDirectory = new File(runDirectory, "applications");

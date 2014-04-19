@@ -1,6 +1,7 @@
 package org.jboss.windup.engine.visitor.reporter.html.renderer;
 
 import java.io.File;
+import java.util.Iterator;
 
 import javax.inject.Inject;
 
@@ -9,7 +10,9 @@ import org.jboss.windup.engine.visitor.reporter.html.model.LinkName;
 import org.jboss.windup.engine.visitor.reporter.html.model.Name;
 import org.jboss.windup.engine.visitor.reporter.html.model.ReportContext;
 import org.jboss.windup.engine.visitor.reporter.html.model.SimpleName;
+import org.jboss.windup.graph.dao.ApplicationReferenceDaoBean;
 import org.jboss.windup.graph.dao.SourceReportDao;
+import org.jboss.windup.graph.model.meta.ApplicationReference;
 import org.jboss.windup.graph.model.meta.JarManifest;
 import org.jboss.windup.graph.model.meta.PropertiesMeta;
 import org.jboss.windup.graph.model.resource.ArchiveEntryResource;
@@ -24,10 +27,27 @@ public class NamingUtility {
 	private static final Logger LOG = LoggerFactory.getLogger(NamingUtility.class);
 	
 	@Inject
+	private ApplicationReferenceDaoBean applicationReferenceDao;
+	
+	
+	@Inject
 	private WindupContext context;
 	
 	@Inject
 	private SourceReportDao sourceReportDao;
+	
+	public String getApplicationName() {
+		ApplicationReference reference = null;
+		//get an application reference...
+		Iterator<ApplicationReference> applicationReferences = applicationReferenceDao.getAll().iterator();
+		if(applicationReferences.hasNext()) {
+			reference = applicationReferences.next();
+		}
+		if(reference != null) {
+			return reference.getArchive().getArchiveName();
+		}
+		return "Unknown";
+	}
 	
 	protected String buildFullPath(ArchiveEntryResource resource) {
 		String path = resource.getArchiveEntry();

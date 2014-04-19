@@ -10,12 +10,14 @@ import javax.inject.Inject;
 import org.apache.commons.io.FileUtils;
 import org.jboss.windup.engine.WindupContext;
 import org.jboss.windup.engine.visitor.base.EmptyGraphVisitor;
+import org.jboss.windup.engine.visitor.reporter.html.model.ApplicationContext;
 import org.jboss.windup.engine.visitor.reporter.html.model.SpringReport;
 import org.jboss.windup.engine.visitor.reporter.html.model.SpringReport.SpringBeanJNDIRow;
 import org.jboss.windup.engine.visitor.reporter.html.model.SpringReport.SpringBeanResourceRow;
 import org.jboss.windup.engine.visitor.reporter.html.model.SpringReport.SpringBeanRow;
 import org.jboss.windup.graph.dao.JarArchiveDaoBean;
 import org.jboss.windup.graph.model.resource.ArchiveResource;
+import org.omg.CosNaming.NamingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +34,10 @@ public class SpringReportRenderer extends EmptyGraphVisitor {
 	@Inject
 	private JarArchiveDaoBean jarDao;
 	
+	@Inject
+	private NamingUtility namingUtility;
 	private final Configuration cfg;
+	
 	
 	public SpringReportRenderer() {
 		cfg = new Configuration();
@@ -46,6 +51,10 @@ public class SpringReportRenderer extends EmptyGraphVisitor {
 			Template template = cfg.getTemplate("/reports/templates/spring.ftl");
 			
 			Map<String, Object> objects = new HashMap<String, Object>();
+			
+			ApplicationContext appCtx = new ApplicationContext(namingUtility.getApplicationName()); 
+			objects.put("application", appCtx);
+		
 			objects.put("spring", generageReports());
 			
 			File runDirectory = context.getRunDirectory();

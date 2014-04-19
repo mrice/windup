@@ -20,7 +20,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>example-app.war - EJB Report</title>
+    <title>${application.applicationName} - EJB Report</title>
     <link href="../../resources/css/bootstrap.min.css" rel="stylesheet">
     <link href="../../resources/css/windup.css" rel="stylesheet" media="screen">
   </head>
@@ -38,7 +38,7 @@
     <div class="container" role="main">
         <div class="row">
           <div class="page-header page-header-no-border">
-            <h1>EJB Report <span class="slash">/</span><small style="margin-left: 20px; font-weight: 100;">example-app.war</small></h1>
+            <h1>EJB Report <span class="slash">/</span><small style="margin-left: 20px; font-weight: 100;">${application.applicationName}</small></h1>
              <div class="navbar navbar-default">
             <div class="navbar-header">
               <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">

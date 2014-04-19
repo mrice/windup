@@ -1,29 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<#macro tagRenderer tag>
-	<span class="label label-${tag.level.name()?lower_case}"><#nested/></span>
-</#macro>
-
-<#macro resourceRenderer resource>
-	<tr><td>${resource.resourceName}</td>
-		<td>
-			<#list resource.technologyTags as tag>
-		    <@tagRenderer tag>${tag.title}</@tagRenderer>
-		    </#list>
-		</td>
-		<td>
-			<#list resource.issueTags as tag>
-		    <@tagRenderer tag>${tag.title}</@tagRenderer>
-		    </#list>
-		</td>
-	</tr>
-</#macro>
-
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>${application.applicationName} - Application Report</title>
+    <title>${application.applicationName} - Classloader Report</title>
     <link href="../../resources/css/bootstrap.min.css" rel="stylesheet">
     <link href="../../resources/css/windup.css" rel="stylesheet" media="screen">
   </head>
@@ -41,7 +22,7 @@
     <div class="container" role="main">
         <div class="row">
           <div class="page-header page-header-no-border">
-            <h1>Application Report <span class="slash">/</span><small style="margin-left: 20px; font-weight: 100;">${application.applicationName}</small></h1>
+            <h1>Classloader Report <span class="slash">/</span><small style="margin-left: 20px; font-weight: 100;">${application.applicationName}</small></h1>
              <div class="navbar navbar-default">
             <div class="navbar-header">
               <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
@@ -62,6 +43,7 @@
             </div>
           </div>
         </div>
+       
     </div>
 
 
@@ -71,22 +53,33 @@
 
     <div class="container theme-showcase" role="main">
 
-	<#list application.archives as archive>
-	<div class="panel panel-${archive.level.name()?lower_case}">
+	<#if classloader.clzList?has_content>
+    <div class="panel panel-primary">
         <div class="panel-heading">
-            <h3 class="panel-title">${archive.applicationPath}</h3>
+            <h3 class="panel-title">${report.type}</h3>
         </div>
-        <table class="table table-striped table-bordered">
-          <tr>
-            <th>Name</th><th>Technology</th><th>Issues</th>
-          </tr>
-          <#list archive.resources as resource>
-			<@resourceRenderer resource/>
-          </#list>
-        </table>
-    </div>
-    </#list>
+			<table class="table table-striped table-bordered">
+			<tr>
+				<th>Class Name</th><th>${report.clzType}</th><th>Queue</th>
+			</tr>
+			<#list classloader.clzList as clz>
+			<tr>
+			  <td>${clz}</td>
+			  <td>
+			  	<#if clz.relationships?has_content>
+			  	<table>
+					<#list clz.relationships as relationship>
+						<tr><td></td><td></td></tr>		
+					</#list>
+				</#if>
+			  </td>
+			</tr>
+			</#list>
 
+			</table>
+	</div>
+	</#if>
+        
     </div> <!-- /container -->
 
 

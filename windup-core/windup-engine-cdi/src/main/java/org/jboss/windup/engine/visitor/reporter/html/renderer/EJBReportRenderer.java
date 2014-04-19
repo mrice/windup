@@ -13,6 +13,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.windup.engine.WindupContext;
 import org.jboss.windup.engine.visitor.base.EmptyGraphVisitor;
+import org.jboss.windup.engine.visitor.reporter.html.model.ApplicationContext;
 import org.jboss.windup.engine.visitor.reporter.html.model.EJBReport;
 import org.jboss.windup.engine.visitor.reporter.html.model.EJBReport.EJBRow;
 import org.jboss.windup.engine.visitor.reporter.html.model.EJBReport.MDBRow;
@@ -32,6 +33,9 @@ import freemarker.template.Template;
 
 public class EJBReportRenderer extends EmptyGraphVisitor {
 	private static final Logger LOG = LoggerFactory.getLogger(EJBReportRenderer.class);
+	
+	@Inject
+	private NamingUtility namingUtility;
 	
 	@Inject
 	private WindupContext context;
@@ -75,6 +79,10 @@ public class EJBReportRenderer extends EmptyGraphVisitor {
 			Template template = cfg.getTemplate("/reports/templates/ejb.ftl");
 			
 			Map<String, Object> objects = new HashMap<String, Object>();
+			
+			ApplicationContext context = new ApplicationContext(namingUtility.getApplicationName()); 
+			objects.put("application", context);
+			
 			objects.put("ejbs", generageReports());
 			template.process(objects, new FileWriter(reportReference));
 			LOG.info("Wrote report: "+reportReference.getAbsolutePath());

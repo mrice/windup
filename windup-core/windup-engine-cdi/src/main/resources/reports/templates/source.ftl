@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>example-app.war - Application Report</title>
+    <title>${application.applicationName} - Application Report</title>
     <link href="${report.relativeFrom}resources/css/bootstrap.min.css" rel="stylesheet">
     <link href="${report.relativeFrom}resources/css/windup.css" rel="stylesheet" media="screen">
 	<link rel='stylesheet' type='text/css' href='${report.relativeFrom}resources/libraries/snippet/jquery.snippet.min.css' />

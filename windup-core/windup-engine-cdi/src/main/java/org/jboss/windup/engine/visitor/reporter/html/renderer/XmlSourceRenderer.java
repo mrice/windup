@@ -14,6 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.ivy.plugins.repository.file.FileRepository;
 import org.jboss.windup.engine.WindupContext;
 import org.jboss.windup.engine.visitor.base.EmptyGraphVisitor;
+import org.jboss.windup.engine.visitor.reporter.html.model.ApplicationContext;
 import org.jboss.windup.engine.visitor.reporter.html.model.ReportContext;
 import org.jboss.windup.engine.visitor.reporter.html.model.SourceReport;
 import org.jboss.windup.engine.visitor.reporter.html.model.SourceReport.SourceLineAnnotations;
@@ -85,7 +86,9 @@ public class XmlSourceRenderer extends EmptyGraphVisitor {
 			report.setSourceBlock(createBlockSettings(report.getSourceLineAnnotations()));
 			objects.put("source", report);
 			
-
+			ApplicationContext appCtx = new ApplicationContext(namingUtility.getApplicationName()); 
+			objects.put("application", appCtx);
+		
 			//create report context.
 			File runDirectory = context.getRunDirectory();
 			

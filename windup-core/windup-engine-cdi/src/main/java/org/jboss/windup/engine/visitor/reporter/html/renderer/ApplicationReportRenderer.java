@@ -14,6 +14,7 @@ import org.jboss.windup.engine.visitor.base.EmptyGraphVisitor;
 import org.jboss.windup.engine.visitor.reporter.html.model.ApplicationReport;
 import org.jboss.windup.engine.visitor.reporter.html.model.ArchiveReport;
 import org.jboss.windup.engine.visitor.reporter.html.model.ArchiveReport.ResourceReportRow;
+import org.jboss.windup.engine.visitor.reporter.html.model.ApplicationContext;
 import org.jboss.windup.engine.visitor.reporter.html.model.Level;
 import org.jboss.windup.engine.visitor.reporter.html.model.SimpleName;
 import org.jboss.windup.engine.visitor.reporter.html.model.Tag;
@@ -105,10 +106,7 @@ public class ApplicationReportRenderer extends EmptyGraphVisitor {
 				applicationReport.setApplicationName(reference.getArchiveName());
 				recurseArchive(applicationReport, app.getArchive());
 			}
-			
-			
-		
-		
+
 			Template template = cfg.getTemplate("/reports/templates/application.ftl");
 			
 			java.util.Map<String, Object> objects = new HashMap<String, Object>();

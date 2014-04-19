@@ -11,6 +11,7 @@ import javax.inject.Inject;
 import org.apache.commons.io.FileUtils;
 import org.jboss.windup.engine.WindupContext;
 import org.jboss.windup.engine.visitor.base.EmptyGraphVisitor;
+import org.jboss.windup.engine.visitor.reporter.html.model.ApplicationContext;
 import org.jboss.windup.engine.visitor.reporter.html.model.ReportContext;
 import org.jboss.windup.engine.visitor.reporter.html.model.SourceReport;
 import org.jboss.windup.engine.visitor.reporter.html.model.SourceReport.SourceLineAnnotationHint;
@@ -28,6 +29,9 @@ import freemarker.template.Template;
 
 public class JavaSourceRenderer extends EmptyGraphVisitor {
 	private static final Logger LOG = LoggerFactory.getLogger(JavaSourceRenderer.class);
+	
+	@Inject
+	private NamingUtility namingUtility;
 	
 	@Inject
 	private JavaClassDaoBean javaClassDao;
@@ -63,6 +67,7 @@ public class JavaSourceRenderer extends EmptyGraphVisitor {
 	@Override
 	public void visitJavaClass(JavaClass entry) {
 		try {
+			
 			Template template = cfg.getTemplate("/reports/templates/source.ftl");
 			
 			Map<String, Object> objects = new HashMap<String, Object>();
@@ -89,6 +94,9 @@ public class JavaSourceRenderer extends EmptyGraphVisitor {
 			File archiveReportDirectory = new File(runDirectory, "applications");
 			File archiveDirectory = new File(archiveReportDirectory, "application");
 			FileUtils.forceMkdir(archiveDirectory);
+			
+			ApplicationContext context = new ApplicationContext(namingUtility.getApplicationName()); 
+			objects.put("application", context);
 			
 			File clzDirectory = new File(archiveDirectory, "classes");
 			FileUtils.forceMkdir(clzDirectory);

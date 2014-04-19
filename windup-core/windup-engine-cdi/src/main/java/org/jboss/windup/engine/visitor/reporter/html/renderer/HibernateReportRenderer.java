@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import org.apache.commons.io.FileUtils;
 import org.jboss.windup.engine.WindupContext;
 import org.jboss.windup.engine.visitor.base.EmptyGraphVisitor;
+import org.jboss.windup.engine.visitor.reporter.html.model.ApplicationContext;
 import org.jboss.windup.engine.visitor.reporter.html.model.HibernateReport;
 import org.jboss.windup.engine.visitor.reporter.html.model.HibernateReport.HibernateEntityRow;
 import org.jboss.windup.engine.visitor.reporter.html.model.HibernateReport.SessionPropertyRow;
@@ -27,6 +28,8 @@ public class HibernateReportRenderer extends EmptyGraphVisitor {
 	@Inject
 	private WindupContext context;
 	
+	@Inject 
+	private NamingUtility namingUtility;
 
 	@Inject
 	private JarArchiveDaoBean jarDao;
@@ -46,6 +49,9 @@ public class HibernateReportRenderer extends EmptyGraphVisitor {
 			
 			Map<String, Object> objects = new HashMap<String, Object>();
 			objects.put("hibernate", generageReports());
+			
+			ApplicationContext ctx = new ApplicationContext(namingUtility.getApplicationName()); 
+			objects.put("application", ctx);
 			
 			File runDirectory = context.getRunDirectory();
 			File archiveReportDirectory = new File(runDirectory, "applications");
