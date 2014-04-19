@@ -57,6 +57,7 @@
                 <li><a href="hibernate.html">Hibernate</a></li>
                 <li><a href="spring.html">Spring</a></li>
                 <li><a href="server-resources.html">Server Resources</a></li>
+                <li><a href="classloader-blacklists.html">Blacklists</a></li>
               </ul>
             </div><!-- /.nav-collapse -->
             </div>

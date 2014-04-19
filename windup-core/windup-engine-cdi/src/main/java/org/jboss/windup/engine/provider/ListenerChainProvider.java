@@ -44,6 +44,7 @@ import org.jboss.windup.engine.visitor.reporter.NamespacesFoundReporter;
 import org.jboss.windup.engine.visitor.reporter.WriteGraphToDotReporter;
 import org.jboss.windup.engine.visitor.reporter.WriteGraphToGraphMLReporter;
 import org.jboss.windup.engine.visitor.reporter.html.renderer.ApplicationReportRenderer;
+import org.jboss.windup.engine.visitor.reporter.html.renderer.BlacklistClassloaderReportRenderer;
 import org.jboss.windup.engine.visitor.reporter.html.renderer.CssJsResourceRenderer;
 import org.jboss.windup.engine.visitor.reporter.html.renderer.EJBReportRenderer;
 import org.jboss.windup.engine.visitor.reporter.html.renderer.HibernateReportRenderer;
@@ -197,6 +198,9 @@ public class ListenerChainProvider {
 	@Inject
 	private PropertiesSourceRenderer propertiesRenderer;
 	
+	@Inject
+	private BlacklistClassloaderReportRenderer blacklistReport;
+	
 	@ListenerChainQualifier
 	@Produces
 	public List<GraphVisitor> produceListenerChain() {
@@ -265,9 +269,10 @@ public class ListenerChainProvider {
 		listenerChain.add(hibernateRenderer);
 		listenerChain.add(springRenderer);
 		listenerChain.add(serverResourceRenderer);
+		listenerChain.add(blacklistReport);
 		
 		listenerChain.add(appReportRenderer);
-
+		
 		return listenerChain;
 	}
 }

@@ -38,6 +38,7 @@
                 <li><a href="hibernate.html">Hibernate</a></li>
                 <li><a href="spring.html">Spring</a></li>
                 <li><a href="server-resources.html">Server Resources</a></li>
+                <li><a href="classloader-blacklists.html">Blacklists</a></li>
               </ul>
             </div><!-- /.nav-collapse -->
             </div>
@@ -53,24 +54,25 @@
 
     <div class="container theme-showcase" role="main">
 
-	<#if classloader.clzList?has_content>
+	<#if classloader.classes?has_content>
     <div class="panel panel-primary">
         <div class="panel-heading">
-            <h3 class="panel-title">${report.type}</h3>
+            <h3 class="panel-title">${classloader.type}</h3>
         </div>
 			<table class="table table-striped table-bordered">
 			<tr>
-				<th>Class Name</th><th>${report.clzType}</th><th>Queue</th>
+				<th>${classloader.referencedFrom}</th><th>${classloader.referenceType}</th>
 			</tr>
-			<#list classloader.clzList as clz>
+			<#list classloader.classes as clz>
 			<tr>
-			  <td>${clz}</td>
+			  <td>${clz.clzName}</td>
 			  <td>
-			  	<#if clz.relationships?has_content>
+			  	<#if clz.references?has_content>
 			  	<table>
-					<#list clz.relationships as relationship>
-						<tr><td></td><td></td></tr>		
+					<#list clz.references as reference>
+						<tr>${reference.referenceType}<td></td><td>${reference.clzName}</td></tr>		
 					</#list>
+				</table>
 				</#if>
 			  </td>
 			</tr>

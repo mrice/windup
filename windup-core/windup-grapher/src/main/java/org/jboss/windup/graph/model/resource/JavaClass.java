@@ -86,11 +86,9 @@ public interface JavaClass extends Resource {
 	@GremlinGroovy("it.sideEffect{x=it}.in('extends', 'imports', 'implements').dedup().filter{it!=x}")
 	public Iterable<JavaClass> providesForJavaClass();
 
-
 	@GremlinGroovy(value="it.has('blacklistCandidate').hasNext()", frame=false)
 	public boolean isBlacklistCandidate();
 
-	
 	@GremlinGroovy(value="it.has('customerPackage').hasNext()", frame=false)
 	public boolean isCustomerPackage();
 	
