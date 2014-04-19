@@ -101,28 +101,30 @@ public class JavaASTVariableResolvingVisitor extends ASTVisitor {
 	}
 
 
-	private void processConstructor(ConstructorType interest, int lineStart, String decoratorPrefix, SourceType sourceType) {
+	private void processConstructor(ConstructorType interest, int lineStart, int startPosition, int length, String decoratorPrefix, SourceType sourceType) {
 		if(!blacklistCandidates.contains(interest.getQualifiedName())) {
 			return;
 		}
 		
-		ClassCandidate dr = new ClassCandidate(lineStart, interest.toString());
+		ClassCandidate dr = new ClassCandidate(lineStart, startPosition, length, interest.toString());
 		//results.add(dr);
-		LOG.debug("Candidate: "+dr);
+		LOG.info("Prefix: "+decoratorPrefix);
+		LOG.info("Candidate: "+dr);
 	}
 	
-	private void processMethod(MethodType interest, int lineStart, String decoratorPrefix, SourceType sourceType) {
+	private void processMethod(MethodType interest, int lineStart, int startPosition, int length, String decoratorPrefix, SourceType sourceType) {
 		if(!blacklistCandidates.contains(interest.getQualifiedName())) {
 			return;
 		}
 		
-		ClassCandidate dr = new ClassCandidate(lineStart, interest.toString());
+		ClassCandidate dr = new ClassCandidate(lineStart, startPosition, length, interest.toString());
 		//results.add(dr);
-		LOG.debug("Candidate: "+dr);
+		LOG.info("Prefix: "+decoratorPrefix);
+		LOG.info("Candidate: "+dr);
 	}
 	
-	private void processInterest(String interest, int lineStart, String decoratorPrefix, SourceType sourceType) {
-		int sourcePosition = lineStart;
+	private void processInterest(String interest, int lineStart, int startPosition, int length, String decoratorPrefix, SourceType sourceType) {
+		
 		String sourceString = interest;
 		if (!StringUtils.contains(sourceString, ".")) {
 			if (classNameToFullyQualified.containsKey(sourceString)) {
@@ -134,10 +136,10 @@ public class JavaASTVariableResolvingVisitor extends ASTVisitor {
 			return;
 		}
 
-		
-		ClassCandidate dr = new ClassCandidate(sourcePosition, sourceString);
+		ClassCandidate dr = new ClassCandidate(lineStart, startPosition, length, sourceString);
 		//results.add(dr);
-		LOG.debug("Candidate: "+dr);
+		LOG.info("Prefix: "+decoratorPrefix);
+		LOG.info("Candidate: "+dr);
 	}
 
 	private void processType(Type type, String decoratorPrefix, SourceType sourceType) {
@@ -145,6 +147,9 @@ public class JavaASTVariableResolvingVisitor extends ASTVisitor {
 			return;
 
 		int sourcePosition = cu.getLineNumber(type.getStartPosition());
+		int startPosition = cu.getColumnNumber(type.getStartPosition());
+		int length = type.getLength();
+		
 		String sourceString = type.toString();
 		if (!StringUtils.contains(sourceString, ".")) {
 			if (classNameToFullyQualified.containsKey(sourceString)) {
@@ -157,16 +162,16 @@ public class JavaASTVariableResolvingVisitor extends ASTVisitor {
 			return;
 		}
 
-		ClassCandidate dr = new ClassCandidate(sourcePosition, sourceString);
+		ClassCandidate dr = new ClassCandidate(sourcePosition, startPosition, length, sourceString);
 		//results.add(dr);
+		LOG.info("Prefix: "+decoratorPrefix);
 		LOG.info("Candidate: "+dr);
 	}
 
-	private void processName(Name name, String decoratorPrefix, int position) {
+	private void processName(Name name, String decoratorPrefix, int lineNumber, int startPosition, int length) {
 		if (name == null)
 			return;
 
-		int sourcePosition = position;
 		String sourceString = name.toString();
 
 		if (!StringUtils.contains(sourceString, ".")) {
@@ -180,8 +185,9 @@ public class JavaASTVariableResolvingVisitor extends ASTVisitor {
 			return;
 		}
 
-		ClassCandidate dr = new ClassCandidate(sourcePosition, sourceString);
+		ClassCandidate dr = new ClassCandidate(lineNumber, startPosition, length, sourceString);
 		//TODO: results.add(dr);
+		LOG.info("Prefix: "+decoratorPrefix);
 		LOG.info("Candidate: "+dr);
 	}
 
@@ -212,7 +218,7 @@ public class JavaASTVariableResolvingVisitor extends ASTVisitor {
 		List<Name> throwsTypes = node.thrownExceptions();
 		if (throwsTypes != null) {
 			for (Name name : throwsTypes) {
-				processName(name, "Throws", node.getStartPosition());
+				processName(name, "Throws", cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(name.getStartPosition()), name.getLength());
 			}
 		}
 
@@ -276,19 +282,19 @@ public class JavaASTVariableResolvingVisitor extends ASTVisitor {
 	
 	@Override
 	public boolean visit(MarkerAnnotation node) {
-		processName(node.getTypeName(), "Annotation", cu.getLineNumber(node.getStartPosition()));
+		processName(node.getTypeName(), "Annotation", cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(cu.getStartPosition()), cu.getLength());
 		return super.visit(node);
 	}
 
 	@Override
 	public boolean visit(NormalAnnotation node) {
-		processName(node.getTypeName(), "Annotation", cu.getLineNumber(node.getStartPosition()));
+		processName(node.getTypeName(), "Annotation", cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()), node.getLength());
 		return super.visit(node);
 	}
 
 	@Override
 	public boolean visit(SingleMemberAnnotation node) {
-		processName(node.getTypeName(), "Annotation", cu.getLineNumber(node.getStartPosition()));
+		processName(node.getTypeName(), "Annotation", cu.getLineNumber(node.getStartPosition()), cu.getColumnNumber(node.getStartPosition()), node.getLength());
 		return super.visit(node);
 	}
 
@@ -349,12 +355,12 @@ public class JavaASTVariableResolvingVisitor extends ASTVisitor {
 		if (!node.isOnDemand()) {
 			String clzName = StringUtils.substringAfterLast(name, ".");
 			classNameToFullyQualified.put(clzName, name);
-			processInterest(node.getName().toString(), cu.getLineNumber(node.getStartPosition()), "Import of", SourceType.IMPORT);
+			processInterest(node.getName().toString(), cu.getLineNumber(node.getName().getStartPosition()), cu.getColumnNumber(node.getName().getStartPosition()), node.getName().getLength(), "Import of", SourceType.IMPORT);
 		}
 		else {
 			for (String knownClz : classNameToFullyQualified.values()) {
 				if (StringUtils.startsWith(knownClz, name)) {
-					processInterest(knownClz, cu.getLineNumber(node.getStartPosition()), "Leads to import of", SourceType.IMPORT);
+					processInterest(knownClz, cu.getLineNumber(node.getName().getStartPosition()), cu.getColumnNumber(node.getName().getStartPosition()), node.getName().getLength(), "Leads to import of", SourceType.IMPORT);
 				}
 			}
 		}
@@ -388,7 +394,7 @@ public class JavaASTVariableResolvingVisitor extends ASTVisitor {
 		}
 		
 		MethodType methodCall = new MethodType(objRef, node.getName().toString(), resolvedParams);
-		processMethod(methodCall, cu.getLineNumber(node.getStartPosition()), "Usage of", SourceType.METHOD);
+		processMethod(methodCall, cu.getLineNumber(node.getName().getStartPosition()), cu.getColumnNumber(node.getName().getStartPosition()), node.getName().getLength(), "Usage of", SourceType.METHOD);
 
 		return super.visit(node);
 	}
@@ -404,7 +410,7 @@ public class JavaASTVariableResolvingVisitor extends ASTVisitor {
 		List<String> resolvedParams = this.methodParameterGuesser(node.arguments());
 
 		ConstructorType resolvedConstructor = new ConstructorType(nodeType, resolvedParams);
-		processConstructor(resolvedConstructor, cu.getLineNumber(node.getStartPosition()), "Constructing type", SourceType.CONSTRUCT);
+		processConstructor(resolvedConstructor, cu.getLineNumber(node.getType().getStartPosition()), cu.getColumnNumber(node.getType().getStartPosition()), node.getType().getLength(), "Constructing type", SourceType.CONSTRUCT);
 
 		return super.visit(node);
 	}
@@ -487,7 +493,7 @@ public class JavaASTVariableResolvingVisitor extends ASTVisitor {
 				}
 			}
 			else {
-				LOG.debug("Unable to determine type: " + o.getClass() + ReflectionToStringBuilder.toString(o));
+				LOG.info("Unable to determine type: " + o.getClass() + ReflectionToStringBuilder.toString(o));
 				resolvedParams.add("Undefined");
 			}
 		}
